@@ -1,0 +1,87 @@
+import { Router } from 'express';
+import path from 'path';
+import { upload } from '../middleware/upload.middleware.js';
+import { FFmpegService } from '../services/ffmpeg.service.js';
+import { DiskSpaceService } from '../services/disk-space.service.js';
+import type { VideoFormat, VideoQuality } from '../types/conversion.js';
+
+const router = Router();
+const ffmpegService = new FFmpegService();
+const diskSpaceService = new DiskSpaceService();
+
+// Conversion Jobs Map
+const jobs = new Map<string, { outputPath: string; format: string }>();
+
+router.post('/convert', upload.single('video'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const { jobId, targetFormat, quality } = req.body as {
+      jobId: string;
+      targetFormat: VideoFormat;
+      quality: VideoQuality;
+    };
+
+    if (!jobId || !targetFormat || !quality) {
+      return res.status(400).json({ error: 'Missing parameters' });
+    }
+
+    // Check disk space
+    const fileSizeGB = req.file.size / 1024 / 1024 / 1024;
+    const hasSpace = await diskSpaceService.checkAvailableSpace(fileSizeGB);
+
+    if (!hasSpace) {
+      return res.status(507).json({ 
+        error: 'Insufficient disk space',
+        message: 'Server has not enough free disk space for this conversion' 
+      });
+    }
+
+    // Disable timeouts for large files
+    req.setTimeout(0);
+    res.setTimeout(0);
+
+    const outputFilename = `output-${jobId}.${targetFormat}`;
+    const outputPath = path.join('outputs', outputFilename);
+
+    // Store job info
+    jobs.set(jobId, { outputPath, format: targetFormat });
+
+    // Start conversion (async)
+    ffmpegService.convert({
+      jobId,
+      inputPath: req.file.path,
+      outputPath,
+      targetFormat,
+      quality
+    }).catch((error) => {
+      console.error(`[Convert] Failed for ${jobId}:`, error);
+    });
+
+    res.json({ jobId, status: 'processing' });
+  } catch (error) {
+    console.error('[Convert] Error:', error);
+    res.status(500).json({ error: 'Conversion failed' });
+  }
+});
+
+router.get('/download/:jobId', (req, res) => {
+  const { jobId } = req.params;
+  const job = jobs.get(jobId);
+
+  if (!job) {
+    return res.status(404).json({ error: 'Job not found' });
+  }
+
+  const filename = `converted.${job.format}`;
+  res.download(job.outputPath, filename, (err) => {
+    if (err) {
+      console.error('[Download] Error:', err);
+      res.status(500).json({ error: 'Download failed' });
+    }
+  });
+});
+
+export default router;

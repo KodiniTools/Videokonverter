@@ -1,0 +1,28 @@
+{
+  "name": "video-converter-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "multer": "^1.4.5-lts.1",
+    "fluent-ffmpeg": "^2.1.2",
+    "ws": "^8.14.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.20",
+    "@types/cors": "^2.8.15",
+    "@types/multer": "^1.4.9",
+    "@types/fluent-ffmpeg": "^2.1.22",
+    "@types/ws": "^8.5.8",
+    "@types/node": "^20.8.10",
+    "tsx": "^4.0.0",
+    "typescript": "^5.2.2"
+  }
+}
