@@ -3,106 +3,22 @@ import { QUALITY_PRESETS, type ConversionOptions } from '../types/conversion.js'
 import { broadcastProgress } from '../websocket.js';
 
 export class FFmpegService {
-  private gpuAvailable: boolean | null = null;
-
   /**
-   * Detect if GPU encoding (h264_nvenc) is available
-   */
-  private async detectGPU(): Promise<boolean> {
-    if (this.gpuAvailable !== null) {
-      return this.gpuAvailable;
-    }
-
-    console.log('[FFmpeg] Detecting available encoders...');
-
-    return new Promise((resolve) => {
-      const process = spawn('ffmpeg', ['-encoders']);
-      let output = '';
-
-      process.stdout.on('data', (data) => {
-        output += data.toString();
-      });
-
-      process.on('close', () => {
-        this.gpuAvailable = output.includes('h264_nvenc');
-        if (this.gpuAvailable) {
-          console.log('[FFmpeg] ✅ GPU encoder detected: h264_nvenc');
-        } else {
-          console.log('[FFmpeg] ℹ️  No GPU encoder found, using CPU only');
-        }
-        resolve(this.gpuAvailable);
-      });
-
-      process.on('error', () => {
-        this.gpuAvailable = false;
-        resolve(false);
-      });
-    });
-  }
-
-  /**
-   * Main conversion method with GPU fallback
+   * Main conversion method - CPU only (GPU disabled due to server limitations)
    */
   async convert(options: ConversionOptions): Promise<void> {
     const { jobId, inputPath, outputPath, targetFormat, quality } = options;
     const settings = QUALITY_PRESETS[quality];
 
-    // Try GPU first if available
-    const hasGPU = await this.detectGPU();
+    console.log('[FFmpeg] 💻 CPU encoding (quality: ${quality})');
 
-    if (hasGPU && targetFormat === 'mp4') {
-      try {
-        await this.convertWithGPU(options, settings);
-        return;
-      } catch (error) {
-        console.log('[FFmpeg] 🔄 GPU failed, retrying with CPU encoding...');
-      }
-    }
-
-    // Fallback to CPU
+    // CPU conversion with optimizations
     await this.convertWithCPU(options, settings);
   }
 
-  /**
-   * GPU encoding with h264_nvenc - OPTIMIZED
-   */
-  private async convertWithGPU(
-    options: ConversionOptions,
-    settings: { bitrate: string; preset: string }
-  ): Promise<void> {
-    const { jobId, inputPath, outputPath, quality } = options;
-
-    console.log(`[FFmpeg] 🚀 GPU: h264_nvenc (quality: ${quality})`);
-
-    const args = [
-      '-i', inputPath,
-      '-y',
-      // Audio settings
-      '-acodec', 'aac',
-      '-b:a', '128k',
-      // GPU encoding
-      '-vcodec', 'h264_nvenc',
-      '-preset', 'p4',  // p1=fastest, p7=slowest, p4=balanced
-      '-tune', 'hq',     // High quality tune
-      '-rc', 'vbr',      // Variable bitrate
-      '-cq', quality === 'high' ? '19' : quality === 'medium' ? '23' : '28',
-      '-b:v', settings.bitrate,
-      '-maxrate', settings.bitrate,
-      '-bufsize', `${parseInt(settings.bitrate) * 2}k`,
-      // Encoding optimizations
-      '-profile:v', 'main',
-      '-level', '4.1',
-      '-movflags', '+faststart',  // Optimize for streaming
-      outputPath
-    ];
-
-    console.log(`[FFmpeg] Command: ffmpeg ${args.join(' ')}`);
-
-    return this.runFFmpeg(jobId, args, inputPath);
-  }
 
   /**
-   * CPU encoding with libx264 - OPTIMIZED
+   * CPU encoding with libx264 - OPTIMIZED for problematic WMV files
    */
   private async convertWithCPU(
     options: ConversionOptions,
@@ -113,23 +29,30 @@ export class FFmpegService {
     console.log(`[FFmpeg] 💻 CPU: ${this.getCodec(targetFormat)} (quality: ${quality})`);
 
     const args = [
+      // Input handling for WMV with timestamp issues
+      '-fflags', '+genpts',  // Generate presentation timestamps
       '-i', inputPath,
       '-y',
       // Performance: Use all available CPU cores
       '-threads', '0',  // 0 = auto-detect optimal thread count
+      // FIX: Force constant framerate to prevent frame duplication
+      '-r', '30',  // Output 30fps
+      '-vsync', 'cfr',  // Constant framerate
       // Audio settings
       '-acodec', 'aac',
       '-b:a', '128k',
       // Video codec
       '-vcodec', this.getCodec(targetFormat),
       '-b:v', settings.bitrate,
-      // IMPORTANT: "ultrafast" = schnell aber große Datei, "medium" = langsam aber kleine Datei
-      '-preset', 'veryfast',  // Realistic speed/quality balance
-      '-tune', 'fastdecode',  // Optimize for fast decoding
+      // IMPORTANT: "ultrafast" = schnell aber große Datei
+      '-preset', 'ultrafast',  // Maximum speed for slow conversions
+      '-tune', 'zerolatency',  // Optimize for speed
       // Quality settings
-      '-crf', quality === 'high' ? '18' : quality === 'medium' ? '23' : '28',
-      '-profile:v', 'main',
-      '-level', '4.1',
+      '-crf', quality === 'high' ? '20' : quality === 'medium' ? '25' : '30',
+      '-profile:v', 'baseline',  // Faster than main profile
+      '-level', '3.0',
+      // Skip B-frames for speed
+      '-bf', '0',
       // Streaming optimization
       '-movflags', '+faststart',
       outputPath
