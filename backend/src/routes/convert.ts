@@ -14,6 +14,10 @@ const jobs = new Map<string, { outputPath: string; format: string }>();
 
 router.post('/convert', upload.single('video'), async (req, res) => {
   try {
+    // Performance-Optimierung: Timeouts sofort deaktivieren für große Uploads
+    req.setTimeout(0);
+    res.setTimeout(0);
+
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
@@ -33,15 +37,11 @@ router.post('/convert', upload.single('video'), async (req, res) => {
     const hasSpace = await diskSpaceService.checkAvailableSpace(fileSizeGB);
 
     if (!hasSpace) {
-      return res.status(507).json({ 
+      return res.status(507).json({
         error: 'Insufficient disk space',
-        message: 'Server has not enough free disk space for this conversion' 
+        message: 'Server has not enough free disk space for this conversion'
       });
     }
-
-    // Disable timeouts for large files
-    req.setTimeout(0);
-    res.setTimeout(0);
 
     const outputFilename = `output-${jobId}.${targetFormat}`;
     const outputPath = path.join('outputs', outputFilename);

@@ -1,27 +1,67 @@
 server {
     listen 80;
+    # Performance-Optimierung: HTTP/2 aktivieren (erfordert HTTPS)
+    # Für Produktion mit SSL-Zertifikat:
+    # listen 443 ssl http2;
+    # ssl_certificate /path/to/cert.pem;
+    # ssl_certificate_key /path/to/key.pem;
+
     server_name your-domain.com;
 
     # CRITICAL: Upload Limit für 50GB
     client_max_body_size 50G;
-    
+
     # Timeout erhöhen für große Uploads
     client_body_timeout 3600s;
     proxy_read_timeout 3600s;
     proxy_connect_timeout 3600s;
     proxy_send_timeout 3600s;
 
+    # Performance-Optimierung: TCP und Connection-Optimierungen
+    # Sendfile für effiziente Dateiübertragungen
+    sendfile on;
+    # TCP-Optimierungen für bessere Upload-Geschwindigkeit
+    tcp_nopush on;     # Sendet Header und Datei in einem Paket
+    tcp_nodelay on;    # Deaktiviert Nagle's Algorithmus für kleinere Latenz
+
+    # Performance-Optimierung: Keep-Alive Verbindungen
+    keepalive_timeout 65s;
+    keepalive_requests 100;
+
+    # Performance-Optimierung: Gzip Kompression für API-Responses (nicht für Uploads!)
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types text/plain text/css text/xml text/javascript
+               application/json application/javascript application/xml+rss
+               application/rss+xml font/truetype font/opentype
+               application/vnd.ms-fontobject image/svg+xml;
+    gzip_disable "msie6";
+
     # API Backend
     location /api {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
+
+        # Performance-Optimierung: Header für Proxy
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
         proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
-        
-        # Disable buffering für große Uploads
+
+        # Performance-Optimierung: Disable buffering für große Uploads
         proxy_request_buffering off;
+        proxy_buffering off;
+
+        # Performance-Optimierung: Buffer-Größen optimieren
+        proxy_buffer_size 128k;
+        proxy_buffers 8 128k;
+        proxy_busy_buffers_size 256k;
     }
 
     # WebSocket

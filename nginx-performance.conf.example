@@ -1,0 +1,123 @@
+# ============================================================================
+# NGINX Performance-Optimierungen für Video-Konverter
+# ============================================================================
+# Diese Konfiguration sollte in /etc/nginx/nginx.conf eingebunden werden
+# oder als Basis für die Hauptkonfiguration dienen.
+# ============================================================================
+
+# Worker-Prozesse und Verbindungen
+worker_processes auto;  # Automatisch basierend auf CPU-Kernen
+worker_rlimit_nofile 65535;  # Max. open files pro Worker
+
+events {
+    # Performance-Optimierung: Maximale Anzahl gleichzeitiger Verbindungen
+    worker_connections 4096;
+
+    # Effizientere Event-Methode (Linux)
+    use epoll;
+
+    # Akzeptiere mehrere Verbindungen gleichzeitig
+    multi_accept on;
+}
+
+http {
+    # ========================================================================
+    # Basis-Einstellungen
+    # ========================================================================
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # ========================================================================
+    # Performance-Optimierungen: File I/O
+    # ========================================================================
+    # Sendfile für effiziente Dateiübertragungen
+    sendfile on;
+
+    # TCP-Optimierungen
+    tcp_nopush on;      # Sendet Header und Datei in einem Paket
+    tcp_nodelay on;     # Deaktiviert Nagle's Algorithmus für kleinere Latenz
+
+    # Direktes I/O für große Dateien (>1MB) - verhindert Caching im OS
+    directio 1m;
+
+    # Output Buffer Optimierung
+    output_buffers 2 512k;
+    postpone_output 1460;
+
+    # ========================================================================
+    # Performance-Optimierungen: Timeouts
+    # ========================================================================
+    # Client Timeouts
+    client_header_timeout 3600s;
+    client_body_timeout 3600s;
+    send_timeout 3600s;
+
+    # Keep-Alive für Connection-Wiederverwendung
+    keepalive_timeout 65s;
+    keepalive_requests 100;
+
+    # ========================================================================
+    # Performance-Optimierungen: Buffer-Größen
+    # ========================================================================
+    # Upload-Limits
+    client_max_body_size 50G;
+    client_body_buffer_size 10M;
+
+    # Header Buffer
+    client_header_buffer_size 4k;
+    large_client_header_buffers 8 16k;
+
+    # ========================================================================
+    # Performance-Optimierungen: Gzip Kompression
+    # ========================================================================
+    # Wichtig: Gzip wird nur für API-Responses verwendet, nicht für Uploads!
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_buffers 16 8k;
+    gzip_http_version 1.1;
+    gzip_types
+        text/plain
+        text/css
+        text/xml
+        text/javascript
+        application/json
+        application/javascript
+        application/xml+rss
+        application/rss+xml
+        font/truetype
+        font/opentype
+        application/vnd.ms-fontobject
+        image/svg+xml;
+    gzip_disable "msie6";
+
+    # ========================================================================
+    # Performance-Optimierungen: Caching
+    # ========================================================================
+    # Open File Cache für häufig verwendete Dateien
+    open_file_cache max=10000 inactive=30s;
+    open_file_cache_valid 60s;
+    open_file_cache_min_uses 2;
+    open_file_cache_errors on;
+
+    # ========================================================================
+    # Performance-Optimierungen: Logging
+    # ========================================================================
+    # Access Log mit Buffering
+    access_log /var/log/nginx/access.log combined buffer=32k flush=5s;
+    error_log /var/log/nginx/error.log warn;
+
+    # ========================================================================
+    # Performance-Optimierungen: Rate Limiting (optional)
+    # ========================================================================
+    # Verhindert Upload-Flooding von einzelnen IPs
+    # limit_req_zone $binary_remote_addr zone=upload_limit:10m rate=5r/s;
+    # limit_conn_zone $binary_remote_addr zone=conn_limit:10m;
+
+    # ========================================================================
+    # Server-Konfiguration
+    # ========================================================================
+    include /etc/nginx/sites-enabled/*;
+}
