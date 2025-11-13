@@ -18,16 +18,18 @@ export class FFmpegService {
 
 
   /**
-   * CPU encoding with libx264 - OPTIMIZED for problematic WMV files
+   * CPU encoding - OPTIMIZED for problematic WMV files with format-specific parameters
    */
   private async convertWithCPU(
     options: ConversionOptions,
     settings: { bitrate: string; preset: string }
   ): Promise<void> {
     const { jobId, inputPath, outputPath, targetFormat, quality } = options;
+    const codec = this.getCodec(targetFormat);
 
-    console.log(`[FFmpeg] 💻 CPU: ${this.getCodec(targetFormat)} (quality: ${quality})`);
+    console.log(`[FFmpeg] 💻 CPU: ${codec} (quality: ${quality})`);
 
+    // Base arguments (common for all formats)
     const args = [
       // Input handling for WMV with timestamp issues
       '-fflags', '+genpts',  // Generate presentation timestamps
@@ -38,25 +40,50 @@ export class FFmpegService {
       // FIX: Force constant framerate to prevent frame duplication
       '-r', '30',  // Output 30fps
       '-vsync', 'cfr',  // Constant framerate
-      // Audio settings
-      '-acodec', 'aac',
-      '-b:a', '128k',
-      // Video codec
-      '-vcodec', this.getCodec(targetFormat),
-      '-b:v', settings.bitrate,
-      // IMPORTANT: "ultrafast" = schnell aber große Datei
-      '-preset', 'ultrafast',  // Maximum speed for slow conversions
-      '-tune', 'zerolatency',  // Optimize for speed
-      // Quality settings
-      '-crf', quality === 'high' ? '20' : quality === 'medium' ? '25' : '30',
-      '-profile:v', 'baseline',  // Faster than main profile
-      '-level', '3.0',
-      // Skip B-frames for speed
-      '-bf', '0',
-      // Streaming optimization
-      '-movflags', '+faststart',
-      outputPath
     ];
+
+    // Audio settings (common, but AVI might need mp3)
+    if (targetFormat === 'avi') {
+      args.push('-acodec', 'libmp3lame', '-b:a', '128k');
+    } else {
+      args.push('-acodec', 'aac', '-b:a', '128k');
+    }
+
+    // Video codec
+    args.push('-vcodec', codec, '-b:v', settings.bitrate);
+
+    // Format-specific video encoding parameters
+    if (codec === 'libx264') {
+      // MP4, MOV, MKV - libx264 parameters
+      args.push(
+        '-preset', 'ultrafast',  // Maximum speed
+        '-tune', 'zerolatency',  // Speed optimization
+        '-crf', quality === 'high' ? '20' : quality === 'medium' ? '25' : '30',
+        '-profile:v', 'baseline',  // Faster than main profile
+        '-level', '3.0',
+        '-bf', '0'  // No B-frames = faster
+      );
+    } else if (codec === 'libvpx-vp9') {
+      // WebM - VP9 parameters
+      args.push(
+        '-deadline', 'realtime',  // Speed mode for VP9
+        '-cpu-used', '8',  // 0=slowest, 8=fastest
+        '-crf', quality === 'high' ? '20' : quality === 'medium' ? '25' : '30',
+        '-row-mt', '1'  // Multi-threading for VP9
+      );
+    } else if (codec === 'mpeg4') {
+      // AVI - MPEG4 parameters (no preset support)
+      args.push(
+        '-q:v', quality === 'high' ? '3' : quality === 'medium' ? '5' : '8'  // Quality scale 1-31
+      );
+    }
+
+    // Container-specific optimizations
+    if (targetFormat === 'mp4' || targetFormat === 'mov') {
+      args.push('-movflags', '+faststart');  // Streaming optimization
+    }
+
+    args.push(outputPath);
 
     console.log(`[FFmpeg] Command: ffmpeg ${args.join(' ')}`);
 
