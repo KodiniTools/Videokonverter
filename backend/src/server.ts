@@ -7,11 +7,31 @@ import { CleanupService } from './services/cleanup.service.js';
 import { DiskSpaceService } from './services/disk-space.service.js';
 
 const app = express();
-const server = http.createServer(app);
+
+// Performance-Optimierung: HTTP Server mit optimierten Einstellungen
+const server = http.createServer({
+  // Keep-Alive für bessere Connection-Wiederverwendung
+  keepAlive: true,
+  keepAliveTimeout: 65000, // 65 Sekunden (länger als Nginx default 60s)
+  // Timeout für Requests erhöhen (für große Uploads)
+  requestTimeout: 0, // Deaktiviert
+  // Header Timeout
+  headersTimeout: 66000, // Etwas länger als keepAliveTimeout
+}, app);
+
 const PORT = process.env.PORT || 3000;
+
+// Performance-Optimierung: Trust Proxy für korrekte Client-IPs hinter Nginx
+app.set('trust proxy', 1);
+
+// Performance-Optimierung: ETag deaktivieren für große Video-Dateien (spart CPU)
+app.set('etag', false);
 
 // Middleware
 app.use(cors());
+
+// Performance-Optimierung: Body Parser nur für JSON/URL-encoded, nicht für Uploads
+// Uploads werden durch Multer als Streams verarbeitet
 app.use(express.json({ limit: '50gb' }));
 app.use(express.urlencoded({ limit: '50gb', extended: true }));
 
