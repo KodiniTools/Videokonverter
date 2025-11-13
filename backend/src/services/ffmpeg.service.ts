@@ -42,11 +42,13 @@ export class FFmpegService {
       '-vsync', 'cfr',  // Constant framerate
     ];
 
-    // Audio settings (common, but AVI might need mp3)
+    // Audio settings (format-specific)
     if (targetFormat === 'avi') {
       args.push('-acodec', 'libmp3lame', '-b:a', '128k');
+    } else if (targetFormat === 'webm') {
+      args.push('-acodec', 'libopus', '-b:a', '128k');  // WebM requires Opus or Vorbis
     } else {
-      args.push('-acodec', 'aac', '-b:a', '128k');
+      args.push('-acodec', 'aac', '-b:a', '128k');  // MP4, MOV, MKV use AAC
     }
 
     // Video codec
