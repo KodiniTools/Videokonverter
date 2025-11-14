@@ -1,8 +1,17 @@
 import { spawn } from 'child_process';
 import { QUALITY_PRESETS, type ConversionOptions } from '../types/conversion.js';
 import { broadcastProgress } from '../websocket.js';
+import { ProcessManagerService } from './process-manager.service.js';
 
 export class FFmpegService {
+  private processManager = new ProcessManagerService();
+
+  /**
+   * Gibt Zugriff auf den Process Manager (für Graceful Shutdown)
+   */
+  getProcessManager(): ProcessManagerService {
+    return this.processManager;
+  }
   /**
    * Main conversion method - CPU only (GPU disabled due to server limitations)
    */
@@ -98,10 +107,17 @@ export class FFmpegService {
   private async runFFmpeg(
     jobId: string,
     args: string[],
-    inputPath: string
+    inputPath: string,
+    outputPath?: string
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       const ffmpegProcess = spawn('ffmpeg', args);
+
+      // Finde outputPath aus args (letztes Argument)
+      const finalOutputPath = outputPath || args[args.length - 1];
+
+      // Prozess im Process Manager registrieren
+      this.processManager.register(jobId, ffmpegProcess, inputPath, finalOutputPath);
 
       let stderr = '';
       let duration = 0;
@@ -144,9 +160,16 @@ export class FFmpegService {
         }
       });
 
-      ffmpegProcess.on('close', (code) => {
+      ffmpegProcess.on('close', async (code) => {
         if (code === 0) {
           console.log(`[FFmpeg] ✅ Completed: ${jobId}`);
+
+          // Auto-Cleanup: Input-Datei nach erfolgreicher Konvertierung löschen
+          await this.processManager.cleanupInput(jobId);
+
+          // Prozess aus Registry entfernen
+          this.processManager.unregister(jobId);
+
           broadcastProgress({
             jobId,
             progress: 100,
@@ -159,6 +182,15 @@ export class FFmpegService {
           console.error(`[FFmpeg] ❌ Error: ffmpeg exited with code ${code}`);
           console.error(`[FFmpeg] Last stderr:\n${lastLines}`);
 
+          // Cleanup bei Fehler: Beide Dateien löschen
+          const job = this.processManager['activeProcesses'].get(jobId);
+          if (job) {
+            await this.processManager.cleanupFiles(job);
+          }
+
+          // Prozess aus Registry entfernen
+          this.processManager.unregister(jobId);
+
           broadcastProgress({
             jobId,
             progress: 0,
@@ -170,8 +202,18 @@ export class FFmpegService {
         }
       });
 
-      ffmpegProcess.on('error', (err) => {
+      ffmpegProcess.on('error', async (err) => {
         console.error(`[FFmpeg] ❌ Process error: ${err.message}`);
+
+        // Cleanup bei Fehler: Beide Dateien löschen
+        const job = this.processManager['activeProcesses'].get(jobId);
+        if (job) {
+          await this.processManager.cleanupFiles(job);
+        }
+
+        // Prozess aus Registry entfernen
+        this.processManager.unregister(jobId);
+
         broadcastProgress({
           jobId,
           progress: 0,

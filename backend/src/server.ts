@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import http from 'http';
-import convertRoutes from './routes/convert.js';
+import convertRoutes, { ffmpegService } from './routes/convert.js';
 import { initWebSocket } from './websocket.js';
 import { CleanupService } from './services/cleanup.service.js';
 import { DiskSpaceService } from './services/disk-space.service.js';
@@ -60,15 +60,43 @@ setInterval(async () => {
 }, 5 * 60 * 1000);
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('[Server] SIGTERM received, shutting down...');
-  cleanupService.stop();
-  server.close(() => {
-    console.log('[Server] Process terminated');
-  });
-});
+const gracefulShutdown = async (signal: string) => {
+  console.log(`[Server] ${signal} received, shutting down gracefully...`);
 
-server.listen(PORT, () => {
+  // 1. Cleanup Service stoppen
+  cleanupService.stop();
+
+  // 2. Alle aktiven ffmpeg-Prozesse killen
+  const processManager = ffmpegService.getProcessManager();
+  const activeProcesses = processManager.getActiveProcesses();
+
+  if (activeProcesses.length > 0) {
+    console.log(`[Server] Stopping ${activeProcesses.length} active conversion(s)...`);
+    await processManager.killAll();
+  }
+
+  // 3. HTTP Server schließen (keine neuen Verbindungen mehr)
+  server.close(() => {
+    console.log('[Server] HTTP server closed');
+    console.log('[Server] ✅ Graceful shutdown complete');
+    process.exit(0);
+  });
+
+  // 4. Timeout: Force-Exit nach 30 Sekunden
+  setTimeout(() => {
+    console.error('[Server] ⚠️ Graceful shutdown timeout, forcing exit...');
+    process.exit(1);
+  }, 30000);
+};
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT')); // Ctrl+C
+
+server.listen(PORT, async () => {
   console.log(`[Server] Running on http://localhost:${PORT}`);
   console.log(`[WS] WebSocket available on ws://localhost:${PORT}`);
+
+  // Zombie-Prozesse und alte Dateien beim Start aufräumen
+  const processManager = ffmpegService.getProcessManager();
+  await processManager.detectAndKillZombies();
 });
