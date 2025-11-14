@@ -1,7 +1,11 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import type { ProgressUpdate } from '@/types/conversion';
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:3000';
+const WS_URL = import.meta.env.VITE_WS_URL || (
+  import.meta.env.PROD
+    ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/videokonverter`
+    : 'ws://localhost:3000'
+);
 
 export function useWebSocket(onProgress: (update: ProgressUpdate) => void) {
   const ws = ref<WebSocket | null>(null);
