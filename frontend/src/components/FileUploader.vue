@@ -8,7 +8,7 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const uploading = ref(false);
 const error = ref<string | null>(null);
 
-const acceptedFormats = '.mp4,.webm,.avi,.mov,.mkv,.flv,.wmv';
+const acceptedFormats = '.mp4,.webm,.avi,.mov,.mkv,.flv,.wmv,.ts';
 
 function handleDragOver(e: DragEvent) {
   e.preventDefault();
@@ -78,7 +78,7 @@ function triggerFileInput() {
         
         <h3>{{ uploading ? 'Uploading...' : 'Drop video files here' }}</h3>
         <p>or click to browse</p>
-        <p class="formats">Supported: MP4, WebM, AVI, MOV, MKV, FLV, WMV (Max: 50GB)</p>
+        <p class="formats">Supported: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS (Max: 50GB)</p>
       </div>
 
       <input

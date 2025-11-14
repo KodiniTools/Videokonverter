@@ -1,4 +1,4 @@
-export type VideoFormat = 'mp4' | 'webm' | 'avi' | 'mov' | 'mkv';
+export type VideoFormat = 'mp4' | 'webm' | 'avi' | 'mov' | 'mkv' | 'ts';
 export type VideoQuality = 'low' | 'medium' | 'high' | 'ultra';
 export type ConversionStatus = 'pending' | 'processing' | 'completed' | 'error';
 
