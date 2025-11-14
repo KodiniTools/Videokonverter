@@ -9,6 +9,9 @@ const router = Router();
 const ffmpegService = new FFmpegService();
 const diskSpaceService = new DiskSpaceService();
 
+// Export für Graceful Shutdown
+export { ffmpegService };
+
 // Conversion Jobs Map
 const jobs = new Map<string, { outputPath: string; format: string }>();
 
@@ -82,6 +85,36 @@ router.get('/download/:jobId', (req, res) => {
       res.status(500).json({ error: 'Download failed' });
     }
   });
+});
+
+// Cancel/Abort API
+router.delete('/convert/:jobId', async (req, res) => {
+  try {
+    const { jobId } = req.params;
+
+    console.log(`[Convert] Cancel request for job: ${jobId}`);
+
+    // Prozess über Process Manager killen
+    const processManager = ffmpegService.getProcessManager();
+    const success = await processManager.kill(jobId, 'user_cancel');
+
+    if (success) {
+      // Job aus Map entfernen
+      jobs.delete(jobId);
+
+      res.json({
+        success: true,
+        message: 'Conversion cancelled successfully'
+      });
+    } else {
+      res.status(404).json({
+        error: 'Job not found or already completed'
+      });
+    }
+  } catch (error) {
+    console.error('[Convert] Cancel error:', error);
+    res.status(500).json({ error: 'Failed to cancel conversion' });
+  }
 });
 
 export default router;
