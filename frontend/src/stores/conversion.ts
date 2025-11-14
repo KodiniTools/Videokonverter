@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { ConversionJob, ConversionSettings, ProgressUpdate, VideoFormat, VideoQuality } from '@/types/conversion';
+import type { ConversionJob, ConversionSettings, ProgressUpdate } from '@/types/conversion';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const MAX_FILE_SIZE = 50 * 1024 * 1024 * 1024; // 50GB
