@@ -192,7 +192,8 @@ export class FFmpegService {
       webm: 'libvpx-vp9',
       avi: 'mpeg4',
       mov: 'libx264',
-      mkv: 'libx264'
+      mkv: 'libx264',
+      ts: 'libx264'
     };
     return codecs[format] || 'libx264';
   }

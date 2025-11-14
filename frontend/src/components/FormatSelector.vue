@@ -9,7 +9,8 @@ const formats: { value: VideoFormat; label: string }[] = [
   { value: 'webm', label: 'WebM (VP9)' },
   { value: 'avi', label: 'AVI' },
   { value: 'mov', label: 'MOV (QuickTime)' },
-  { value: 'mkv', label: 'MKV (Matroska)' }
+  { value: 'mkv', label: 'MKV (Matroska)' },
+  { value: 'ts', label: 'TS (MPEG-TS)' }
 ];
 
 const qualities: { value: VideoQuality; label: string; bitrate: string }[] = [
