@@ -119,7 +119,10 @@ export class FFmpegService {
       // Prozess im Process Manager registrieren
       this.processManager.register(jobId, ffmpegProcess, inputPath, finalOutputPath);
 
-      let stderr = '';
+      // FIX Problem 3: Ring-Buffer statt unbegrenztem String
+      // Nur letzte 100 Zeilen behalten statt gesamten stderr (spart 50+ MB pro Konvertierung)
+      const stderrLines: string[] = [];
+      const MAX_STDERR_LINES = 100;
       let duration = 0;
       let lastProgress = 0;
 
@@ -132,7 +135,13 @@ export class FFmpegService {
       // Parse stderr for progress
       ffmpegProcess.stderr.on('data', (data) => {
         const output = data.toString();
-        stderr += output;
+
+        // Ring-Buffer: Nur letzte N Zeilen speichern (verhindert Memory-Leak)
+        const lines = output.split('\n').filter(line => line.trim());
+        stderrLines.push(...lines);
+        if (stderrLines.length > MAX_STDERR_LINES) {
+          stderrLines.splice(0, stderrLines.length - MAX_STDERR_LINES);
+        }
 
         // Extract duration
         const durationMatch = output.match(/Duration: (\d{2}):(\d{2}):(\d{2})/);
@@ -161,6 +170,12 @@ export class FFmpegService {
       });
 
       ffmpegProcess.on('close', async (code) => {
+        // FIX Problem 5: Streams explizit schließen um Resource-Leaks zu vermeiden
+        ffmpegProcess.stdin?.destroy();
+        ffmpegProcess.stdout?.destroy();
+        ffmpegProcess.stderr?.destroy();
+        ffmpegProcess.removeAllListeners();
+
         if (code === 0) {
           console.log(`[FFmpeg] ✅ Completed: ${jobId}`);
 
@@ -178,7 +193,8 @@ export class FFmpegService {
           });
           resolve();
         } else {
-          const lastLines = stderr.split('\n').slice(-10).join('\n');
+          // Nutze Ring-Buffer statt gesamten stderr
+          const lastLines = stderrLines.slice(-10).join('\n');
           console.error(`[FFmpeg] ❌ Error: ffmpeg exited with code ${code}`);
           console.error(`[FFmpeg] Last stderr:\n${lastLines}`);
 
@@ -204,6 +220,12 @@ export class FFmpegService {
 
       ffmpegProcess.on('error', async (err) => {
         console.error(`[FFmpeg] ❌ Process error: ${err.message}`);
+
+        // FIX Problem 5: Streams explizit schließen um Resource-Leaks zu vermeiden
+        ffmpegProcess.stdin?.destroy();
+        ffmpegProcess.stdout?.destroy();
+        ffmpegProcess.stderr?.destroy();
+        ffmpegProcess.removeAllListeners();
 
         // Cleanup bei Fehler: Beide Dateien löschen
         const job = this.processManager['activeProcesses'].get(jobId);
