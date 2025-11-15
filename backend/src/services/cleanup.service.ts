@@ -1,8 +1,13 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-const CLEANUP_INTERVAL = 30 * 60 * 1000; // 30 minutes
-const MAX_FILE_AGE = 2 * 60 * 60 * 1000; // 2 hours
+// FIX Problem 4: Deutlich aggressivere Cleanup-Strategie
+// Vorher: 30 Min Interval, 2 Std max Age = Dateien bleiben sehr lange
+// Nachher: 5 Min Interval, 15 Min max Age = Schnelle Disk-Freigabe
+const CLEANUP_INTERVAL = 5 * 60 * 1000;   // 5 minutes (war: 30 min)
+const MAX_FILE_AGE = 15 * 60 * 1000;      // 15 minutes (war: 2 hours)
+// Hinweis: Output-Dateien werden bereits nach Download gelöscht (convert.ts)
+// Dieser Cleanup ist nur ein Fallback für vergessene/orphaned Dateien
 
 export class CleanupService {
   private intervalId?: NodeJS.Timeout;

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import path from 'path';
+import fs from 'fs/promises';
 import { upload } from '../middleware/upload.middleware.js';
 import { FFmpegService } from '../services/ffmpeg.service.js';
 import { DiskSpaceService } from '../services/disk-space.service.js';
@@ -12,8 +13,24 @@ const diskSpaceService = new DiskSpaceService();
 // Export für Graceful Shutdown
 export { ffmpegService };
 
-// Conversion Jobs Map
+// Conversion Jobs Map with size limit to prevent unbounded memory growth
 const jobs = new Map<string, { outputPath: string; format: string }>();
+const MAX_JOBS_IN_MEMORY = 1000;
+
+/**
+ * FIX Problem 6: Helper function to add jobs with size limit
+ */
+function addJob(jobId: string, jobData: { outputPath: string; format: string }) {
+  // Wenn Limit erreicht, ältesten Job entfernen (FIFO)
+  if (jobs.size >= MAX_JOBS_IN_MEMORY) {
+    const firstKey = jobs.keys().next().value;
+    if (firstKey) {
+      jobs.delete(firstKey);
+      console.log(`[Jobs] ⚠️  Map limit reached (${MAX_JOBS_IN_MEMORY}), removed oldest: ${firstKey}`);
+    }
+  }
+  jobs.set(jobId, jobData);
+}
 
 router.post('/convert', upload.single('video'), async (req, res) => {
   try {
@@ -49,8 +66,8 @@ router.post('/convert', upload.single('video'), async (req, res) => {
     const outputFilename = `output-${jobId}.${targetFormat}`;
     const outputPath = path.join('outputs', outputFilename);
 
-    // Store job info
-    jobs.set(jobId, { outputPath, format: targetFormat });
+    // Store job info (mit Size-Limit Check)
+    addJob(jobId, { outputPath, format: targetFormat });
 
     // Start conversion (async)
     ffmpegService.convert({
@@ -79,10 +96,25 @@ router.get('/download/:jobId', (req, res) => {
   }
 
   const filename = `converted.${job.format}`;
-  res.download(job.outputPath, filename, (err) => {
+  res.download(job.outputPath, filename, async (err) => {
     if (err) {
       console.error('[Download] Error:', err);
-      res.status(500).json({ error: 'Download failed' });
+      // Bei Fehler nicht zurücksenden wenn bereits gesendet
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'Download failed' });
+      }
+    } else {
+      // FIX Problem 2: Output-Datei sofort nach erfolgreichem Download löschen
+      try {
+        await fs.unlink(job.outputPath);
+        console.log(`[Download] ✅ Deleted output file: ${job.outputPath}`);
+      } catch (unlinkErr) {
+        console.error('[Download] ⚠️  Failed to delete output:', unlinkErr);
+      }
+
+      // FIX Problem 1: Job aus Map entfernen nach erfolgreichem Download
+      jobs.delete(jobId);
+      console.log(`[Download] ✅ Removed job from memory: ${jobId}`);
     }
   });
 });
