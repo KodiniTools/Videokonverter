@@ -137,7 +137,7 @@ export class FFmpegService {
         const output = data.toString();
 
         // Ring-Buffer: Nur letzte N Zeilen speichern (verhindert Memory-Leak)
-        const lines = output.split('\n').filter(line => line.trim());
+        const lines = output.split('\n').filter((line: string) => line.trim());
         stderrLines.push(...lines);
         if (stderrLines.length > MAX_STDERR_LINES) {
           stderrLines.splice(0, stderrLines.length - MAX_STDERR_LINES);
