@@ -5,19 +5,19 @@ import type { VideoFormat, VideoQuality } from '@/types/conversion';
 const conversionStore = useConversionStore();
 
 const formats: { value: VideoFormat; label: string }[] = [
-  { value: 'mp4', label: 'MP4 (H.264)' },
-  { value: 'webm', label: 'WebM (VP9)' },
-  { value: 'avi', label: 'AVI' },
-  { value: 'mov', label: 'MOV (QuickTime)' },
-  { value: 'mkv', label: 'MKV (Matroska)' },
-  { value: 'ts', label: 'TS (MPEG-TS)' }
+  { value: 'mp4', label: 'mp4 (h.264)' },
+  { value: 'webm', label: 'webm (vp9)' },
+  { value: 'avi', label: 'avi' },
+  { value: 'mov', label: 'mov (quicktime)' },
+  { value: 'mkv', label: 'mkv (matroska)' },
+  { value: 'ts', label: 'ts (mpeg-ts)' }
 ];
 
 const qualities: { value: VideoQuality; label: string; bitrate: string }[] = [
-  { value: 'low', label: 'Low', bitrate: '~500 kbps' },
-  { value: 'medium', label: 'Medium', bitrate: '~1 Mbps' },
-  { value: 'high', label: 'High', bitrate: '~2.5 Mbps' },
-  { value: 'ultra', label: 'Ultra', bitrate: '~5 Mbps' }
+  { value: 'low', label: 'low', bitrate: '~500 kbps' },
+  { value: 'medium', label: 'medium', bitrate: '~1 mbps' },
+  { value: 'high', label: 'high', bitrate: '~2.5 mbps' },
+  { value: 'ultra', label: 'ultra', bitrate: '~5 mbps' }
 ];
 
 function updateFormat(format: VideoFormat) {
@@ -32,7 +32,7 @@ function updateQuality(quality: VideoQuality) {
 <template>
   <div class="format-selector">
     <div class="selector-group">
-      <label>Output Format</label>
+      <label>output format</label>
       <div class="button-group">
         <button
           v-for="format in formats"
@@ -46,7 +46,7 @@ function updateQuality(quality: VideoQuality) {
     </div>
 
     <div class="selector-group">
-      <label>Quality</label>
+      <label>quality</label>
       <div class="button-group">
         <button
           v-for="quality in qualities"
@@ -76,9 +76,10 @@ function updateQuality(quality: VideoQuality) {
 label {
   display: block;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--color-text);
   margin-bottom: 12px;
   font-size: 14px;
+  text-transform: lowercase;
 }
 
 .button-group {
@@ -91,10 +92,10 @@ button {
   flex: 1;
   min-width: 100px;
   padding: 12px 16px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--color-border);
   border-radius: 8px;
-  background: white;
-  color: #475569;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -103,17 +104,18 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  text-transform: lowercase;
 }
 
 button:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
 }
 
 button.active {
-  border-color: #3b82f6;
-  background: #3b82f6;
-  color: white;
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-text);
 }
 
 .quality-label {
