@@ -22,7 +22,7 @@ function handleDragLeave() {
 async function handleDrop(e: DragEvent) {
   e.preventDefault();
   isDragging.value = false;
-  
+
   const files = Array.from(e.dataTransfer?.files || []);
   await processFiles(files);
 }
@@ -39,14 +39,14 @@ async function processFiles(files: File[]) {
 
   for (const file of files) {
     if (!file.type.startsWith('video/')) {
-      error.value = `${file.name}: Not a video file`;
+      error.value = `${file.name}: not a video file`;
       continue;
     }
 
     try {
       await conversionStore.uploadAndConvert(file);
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Upload failed';
+      error.value = err instanceof Error ? err.message : 'upload failed';
     }
   }
 
@@ -72,13 +72,18 @@ function triggerFileInput() {
       @click="triggerFileInput"
     >
       <div class="drop-zone-content">
-        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        
-        <h3>{{ uploading ? 'Uploading...' : 'Drop video files here' }}</h3>
+        <div class="upload-button" :class="{ 'uploading': uploading }">
+          <svg v-if="!uploading" class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <svg v-else class="upload-icon spinning" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <h3>{{ uploading ? 'uploading...' : 'drop video files here' }}</h3>
         <p>or click to browse</p>
-        <p class="formats">Supported: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS (Max: 50GB)</p>
+        <p class="formats">supported: mp4, webm, avi, mov, mkv, flv, wmv, ts (max: 50gb)</p>
       </div>
 
       <input
@@ -105,28 +110,28 @@ function triggerFileInput() {
 }
 
 .drop-zone {
-  border: 3px dashed #cbd5e1;
+  border: 3px dashed var(--color-border);
   border-radius: 12px;
   padding: 60px 20px;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: #f8fafc;
+  background: var(--color-surface);
 }
 
 .drop-zone:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
 }
 
 .drop-zone.drag-over {
-  border-color: #3b82f6;
-  background: #dbeafe;
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
   transform: scale(1.02);
 }
 
 .drop-zone.uploading {
-  opacity: 0.6;
+  opacity: 0.7;
   cursor: wait;
 }
 
@@ -134,37 +139,70 @@ function triggerFileInput() {
   pointer-events: none;
 }
 
-.upload-icon {
-  width: 64px;
-  height: 64px;
+.upload-button {
+  width: 80px;
+  height: 80px;
   margin: 0 auto 20px;
-  color: #3b82f6;
+  background: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.drop-zone:hover .upload-button {
+  background: var(--color-primary-hover);
+  transform: scale(1.05);
+}
+
+.upload-button.uploading {
+  background: var(--color-secondary);
+}
+
+.upload-icon {
+  width: 36px;
+  height: 36px;
+  color: var(--color-text);
+}
+
+.upload-icon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--color-text);
   margin: 0 0 8px;
+  text-transform: lowercase;
 }
 
 p {
-  color: #64748b;
+  color: var(--color-text-secondary);
   margin: 4px 0;
+  text-transform: lowercase;
 }
 
 .formats {
   font-size: 12px;
   margin-top: 12px;
+  color: var(--color-text-muted);
 }
 
 .error-message {
   margin-top: 16px;
   padding: 12px;
-  background: #fee2e2;
-  border: 1px solid #fecaca;
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
   border-radius: 8px;
-  color: #991b1b;
+  color: var(--color-error);
   font-size: 14px;
+  text-transform: lowercase;
 }
 </style>

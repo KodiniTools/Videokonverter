@@ -11,29 +11,23 @@ const conversionStore = useConversionStore();
 
 const statusText = computed(() => {
   switch (props.job.status) {
-    case 'pending': return 'Waiting...';
-    case 'processing': return `Converting... ${props.job.progress}%`;
-    case 'completed': return 'Done';
-    case 'error': return 'Error';
+    case 'pending': return 'waiting...';
+    case 'processing': return `converting... ${props.job.progress}%`;
+    case 'completed': return 'done';
+    case 'error': return 'error';
     default: return '';
   }
 });
 
-const statusColor = computed(() => {
-  switch (props.job.status) {
-    case 'pending': return '#94a3b8';
-    case 'processing': return '#3b82f6';
-    case 'completed': return '#10b981';
-    case 'error': return '#ef4444';
-    default: return '#64748b';
-  }
+const statusClass = computed(() => {
+  return `status-${props.job.status}`;
 });
 
 const fileSizeMB = computed(() => {
   const gb = props.job.fileSize / 1024 / 1024 / 1024;
-  return gb > 1 
-    ? `${gb.toFixed(2)} GB` 
-    : `${(props.job.fileSize / 1024 / 1024).toFixed(1)} MB`;
+  return gb > 1
+    ? `${gb.toFixed(2)} gb`
+    : `${(props.job.fileSize / 1024 / 1024).toFixed(1)} mb`;
 });
 
 function handleDownload() {
@@ -51,11 +45,11 @@ function handleRemove() {
       <div class="file-info">
         <div class="file-name">{{ job.fileName }}</div>
         <div class="file-meta">
-          {{ fileSizeMB }} · {{ job.sourceFormat.toUpperCase() }} → {{ job.targetFormat.toUpperCase() }}
+          {{ fileSizeMB }} · {{ job.sourceFormat.toLowerCase() }} → {{ job.targetFormat.toLowerCase() }}
         </div>
       </div>
-      
-      <div class="status" :style="{ color: statusColor }">
+
+      <div class="status" :class="statusClass">
         {{ statusText }}
       </div>
     </div>
@@ -74,14 +68,20 @@ function handleRemove() {
         class="btn-download"
         @click="handleDownload"
       >
-        Download
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        download
       </button>
-      
+
       <button
         class="btn-remove"
         @click="handleRemove"
       >
-        Remove
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        remove
       </button>
     </div>
   </div>
@@ -89,11 +89,12 @@ function handleRemove() {
 
 <style scoped>
 .conversion-item {
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 12px;
+  transition: all 0.3s ease;
 }
 
 .item-header {
@@ -111,7 +112,7 @@ function handleRemove() {
 
 .file-name {
   font-weight: 600;
-  color: #1e293b;
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -119,19 +120,37 @@ function handleRemove() {
 
 .file-meta {
   font-size: 13px;
-  color: #64748b;
+  color: var(--color-text-secondary);
   margin-top: 4px;
+  text-transform: lowercase;
 }
 
 .status {
   font-weight: 600;
   font-size: 14px;
   white-space: nowrap;
+  text-transform: lowercase;
+}
+
+.status-pending {
+  color: var(--color-text-muted);
+}
+
+.status-processing {
+  color: var(--color-primary);
+}
+
+.status-completed {
+  color: var(--color-success);
+}
+
+.status-error {
+  color: var(--color-error);
 }
 
 .progress-bar {
   height: 6px;
-  background: #e2e8f0;
+  background: var(--color-border-light);
   border-radius: 3px;
   overflow: hidden;
   margin-bottom: 12px;
@@ -139,17 +158,18 @@ function handleRemove() {
 
 .progress-fill {
   height: 100%;
-  background: #3b82f6;
+  background: var(--color-primary);
   transition: width 0.3s ease;
 }
 
 .error-text {
-  color: #ef4444;
+  color: var(--color-error);
   font-size: 13px;
   margin-bottom: 12px;
   padding: 8px;
-  background: #fee2e2;
+  background: var(--color-error-bg);
   border-radius: 4px;
+  text-transform: lowercase;
 }
 
 .item-actions {
@@ -165,23 +185,33 @@ button {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: lowercase;
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .btn-download {
-  background: #3b82f6;
-  color: white;
+  background: var(--color-primary);
+  color: var(--color-text);
 }
 
 .btn-download:hover {
-  background: #2563eb;
+  background: var(--color-primary-hover);
 }
 
 .btn-remove {
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--color-surface-hover);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
 }
 
 .btn-remove:hover {
-  background: #e2e8f0;
+  background: var(--color-border-light);
 }
 </style>
