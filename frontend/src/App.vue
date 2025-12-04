@@ -18,9 +18,9 @@ const { connected } = useWebSocket((update) => {
 <template>
   <div class="app">
     <header class="header">
-      <h1>video converter</h1>
+      <h1>Video Converter</h1>
       <div class="header-controls">
-        <button class="theme-toggle" @click="themeStore.toggleTheme" :title="themeStore.theme === 'light' ? 'switch to dark mode' : 'switch to light mode'">
+        <button class="theme-toggle" @click="themeStore.toggleTheme" :title="themeStore.theme === 'light' ? 'Zum Dunkelmodus wechseln' : 'Zum Hellmodus wechseln'">
           <svg v-if="themeStore.theme === 'light'" class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -31,7 +31,7 @@ const { connected } = useWebSocket((update) => {
         </button>
         <div class="connection-status" :class="{ connected }">
           <span class="status-dot"></span>
-          {{ connected ? 'connected' : 'disconnected' }}
+          {{ connected ? 'Verbunden' : 'Getrennt' }}
         </div>
       </div>
     </header>
@@ -43,7 +43,7 @@ const { connected } = useWebSocket((update) => {
     </main>
 
     <footer class="footer">
-      <p>server-based video conversion with ffmpeg · max file size: 50gb</p>
+      <p>Serverbasierte Videokonvertierung mit FFmpeg · Max. Dateigröße: 50 GB</p>
     </footer>
   </div>
 </template>
@@ -121,7 +121,6 @@ h1 {
   font-size: 24px;
   font-weight: 700;
   color: var(--color-text);
-  text-transform: lowercase;
 }
 
 .header-controls {
@@ -160,7 +159,6 @@ h1 {
   gap: 8px;
   font-size: 13px;
   color: var(--color-text-muted);
-  text-transform: lowercase;
 }
 
 .status-dot {
@@ -186,7 +184,6 @@ h1 {
   text-align: center;
   color: var(--color-text-muted);
   font-size: 13px;
-  text-transform: lowercase;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 </style>

@@ -7,7 +7,7 @@ const conversionStore = useConversionStore();
 
 <template>
   <div v-if="conversionStore.jobs.length > 0" class="conversion-queue">
-    <h2>conversion queue</h2>
+    <h2>Konvertierungswarteschlange</h2>
 
     <div class="queue-list">
       <ConversionItem
@@ -31,6 +31,5 @@ h2 {
   font-weight: 600;
   color: var(--color-text);
   margin-bottom: 16px;
-  text-transform: lowercase;
 }
 </style>
