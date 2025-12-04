@@ -11,10 +11,10 @@ const conversionStore = useConversionStore();
 
 const statusText = computed(() => {
   switch (props.job.status) {
-    case 'pending': return 'waiting...';
-    case 'processing': return `converting... ${props.job.progress}%`;
-    case 'completed': return 'done';
-    case 'error': return 'error';
+    case 'pending': return 'Warten...';
+    case 'processing': return `Konvertierung... ${props.job.progress}%`;
+    case 'completed': return 'Fertig';
+    case 'error': return 'Fehler';
     default: return '';
   }
 });
@@ -26,8 +26,8 @@ const statusClass = computed(() => {
 const fileSizeMB = computed(() => {
   const gb = props.job.fileSize / 1024 / 1024 / 1024;
   return gb > 1
-    ? `${gb.toFixed(2)} gb`
-    : `${(props.job.fileSize / 1024 / 1024).toFixed(1)} mb`;
+    ? `${gb.toFixed(2)} GB`
+    : `${(props.job.fileSize / 1024 / 1024).toFixed(1)} MB`;
 });
 
 function handleDownload() {
@@ -71,7 +71,7 @@ function handleRemove() {
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        download
+        Herunterladen
       </button>
 
       <button
@@ -81,7 +81,7 @@ function handleRemove() {
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        remove
+        Entfernen
       </button>
     </div>
   </div>
@@ -122,14 +122,12 @@ function handleRemove() {
   font-size: 13px;
   color: var(--color-text-secondary);
   margin-top: 4px;
-  text-transform: lowercase;
 }
 
 .status {
   font-weight: 600;
   font-size: 14px;
   white-space: nowrap;
-  text-transform: lowercase;
 }
 
 .status-pending {
@@ -169,7 +167,6 @@ function handleRemove() {
   padding: 8px;
   background: var(--color-error-bg);
   border-radius: 4px;
-  text-transform: lowercase;
 }
 
 .item-actions {
@@ -188,7 +185,6 @@ button {
   display: flex;
   align-items: center;
   gap: 6px;
-  text-transform: lowercase;
 }
 
 .btn-icon {

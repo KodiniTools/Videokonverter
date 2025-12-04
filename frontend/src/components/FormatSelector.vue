@@ -5,19 +5,19 @@ import type { VideoFormat, VideoQuality } from '@/types/conversion';
 const conversionStore = useConversionStore();
 
 const formats: { value: VideoFormat; label: string }[] = [
-  { value: 'mp4', label: 'mp4 (h.264)' },
-  { value: 'webm', label: 'webm (vp9)' },
-  { value: 'avi', label: 'avi' },
-  { value: 'mov', label: 'mov (quicktime)' },
-  { value: 'mkv', label: 'mkv (matroska)' },
-  { value: 'ts', label: 'ts (mpeg-ts)' }
+  { value: 'mp4', label: 'MP4 (H.264)' },
+  { value: 'webm', label: 'WebM (VP9)' },
+  { value: 'avi', label: 'AVI' },
+  { value: 'mov', label: 'MOV (QuickTime)' },
+  { value: 'mkv', label: 'MKV (Matroska)' },
+  { value: 'ts', label: 'TS (MPEG-TS)' }
 ];
 
 const qualities: { value: VideoQuality; label: string; bitrate: string }[] = [
-  { value: 'low', label: 'low', bitrate: '~500 kbps' },
-  { value: 'medium', label: 'medium', bitrate: '~1 mbps' },
-  { value: 'high', label: 'high', bitrate: '~2.5 mbps' },
-  { value: 'ultra', label: 'ultra', bitrate: '~5 mbps' }
+  { value: 'low', label: 'Niedrig', bitrate: '~500 kbps' },
+  { value: 'medium', label: 'Mittel', bitrate: '~1 Mbps' },
+  { value: 'high', label: 'Hoch', bitrate: '~2,5 Mbps' },
+  { value: 'ultra', label: 'Ultra', bitrate: '~5 Mbps' }
 ];
 
 function updateFormat(format: VideoFormat) {
@@ -32,7 +32,7 @@ function updateQuality(quality: VideoQuality) {
 <template>
   <div class="format-selector">
     <div class="selector-group">
-      <label>output format</label>
+      <label>Ausgabeformat</label>
       <div class="button-group">
         <button
           v-for="format in formats"
@@ -46,7 +46,7 @@ function updateQuality(quality: VideoQuality) {
     </div>
 
     <div class="selector-group">
-      <label>quality</label>
+      <label>Qualität</label>
       <div class="button-group">
         <button
           v-for="quality in qualities"
@@ -79,7 +79,6 @@ label {
   color: var(--color-text);
   margin-bottom: 12px;
   font-size: 14px;
-  text-transform: lowercase;
 }
 
 .button-group {
@@ -104,7 +103,6 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  text-transform: lowercase;
 }
 
 button:hover {

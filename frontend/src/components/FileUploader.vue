@@ -39,14 +39,14 @@ async function processFiles(files: File[]) {
 
   for (const file of files) {
     if (!file.type.startsWith('video/')) {
-      error.value = `${file.name}: not a video file`;
+      error.value = `${file.name}: Keine Videodatei`;
       continue;
     }
 
     try {
       await conversionStore.uploadAndConvert(file);
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'upload failed';
+      error.value = err instanceof Error ? err.message : 'Hochladen fehlgeschlagen';
     }
   }
 
@@ -81,9 +81,9 @@ function triggerFileInput() {
           </svg>
         </div>
 
-        <h3>{{ uploading ? 'uploading...' : 'drop video files here' }}</h3>
-        <p>or click to browse</p>
-        <p class="formats">supported: mp4, webm, avi, mov, mkv, flv, wmv, ts (max: 50gb)</p>
+        <h3>{{ uploading ? 'Wird hochgeladen...' : 'Videodateien hier ablegen' }}</h3>
+        <p>oder klicken zum Durchsuchen</p>
+        <p class="formats">Unterstützt: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS (Max: 50 GB)</p>
       </div>
 
       <input
@@ -180,13 +180,11 @@ h3 {
   font-weight: 600;
   color: var(--color-text);
   margin: 0 0 8px;
-  text-transform: lowercase;
 }
 
 p {
   color: var(--color-text-secondary);
   margin: 4px 0;
-  text-transform: lowercase;
 }
 
 .formats {
@@ -203,6 +201,5 @@ p {
   border-radius: 8px;
   color: var(--color-error);
   font-size: 14px;
-  text-transform: lowercase;
 }
 </style>
