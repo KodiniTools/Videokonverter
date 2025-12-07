@@ -1,6 +1,6 @@
 export type VideoFormat = 'mp4' | 'webm' | 'avi' | 'mov' | 'mkv' | 'ts';
 export type VideoQuality = 'low' | 'medium' | 'high' | 'ultra';
-export type ConversionStatus = 'pending' | 'processing' | 'completed' | 'error';
+export type ConversionStatus = 'uploading' | 'uploaded' | 'pending' | 'processing' | 'completed' | 'error';
 
 export interface ConversionJob {
   id: string;
@@ -13,6 +13,7 @@ export interface ConversionJob {
   progress: number;
   error?: string;
   downloadUrl?: string;
+  uploadedFilePath?: string;
   createdAt: number;
 }
 

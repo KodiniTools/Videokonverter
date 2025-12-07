@@ -44,7 +44,7 @@ async function processFiles(files: File[]) {
     }
 
     try {
-      await conversionStore.uploadAndConvert(file);
+      await conversionStore.uploadFile(file);
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Hochladen fehlgeschlagen';
     }
