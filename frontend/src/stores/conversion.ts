@@ -45,6 +45,7 @@ export const useConversionStore = defineStore('conversion', () => {
     formData.append('targetFormat', settings.value.targetFormat);
     formData.append('quality', settings.value.quality);
     formData.append('jobId', jobId);
+    formData.append('originalName', file.name);
 
     try {
       // XMLHttpRequest für Upload-Progress
