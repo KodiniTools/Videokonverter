@@ -17,11 +17,19 @@ const storage = multer.diskStorage({
   }
 });
 
+const allowedExtensions = ['.mp4', '.webm', '.avi', '.mov', '.mkv', '.flv', '.wmv', '.ts'];
+
 const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  if (!file.mimetype.startsWith('video/')) {
-    return cb(new Error('Only video files allowed'));
+  // Prüfe MIME-Type
+  if (file.mimetype.startsWith('video/')) {
+    return cb(null, true);
   }
-  cb(null, true);
+  // Fallback: Prüfe Dateiendung (für MOV, MKV etc. die manchmal nicht erkannt werden)
+  const ext = path.extname(file.originalname).toLowerCase();
+  if (allowedExtensions.includes(ext)) {
+    return cb(null, true);
+  }
+  return cb(new Error('Only video files allowed'));
 };
 
 // Performance-Optimierung: Optimierter Storage mit größeren Buffern
