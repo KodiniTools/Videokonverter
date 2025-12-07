@@ -13,15 +13,31 @@ const diskSpaceService = new DiskSpaceService();
 // Export für Graceful Shutdown
 export { ffmpegService };
 
-// Conversion Jobs Map with size limit to prevent unbounded memory growth
+// Uploaded files Map (vor Konvertierung)
+const uploadedFiles = new Map<string, { inputPath: string; originalName: string; fileSize: number }>();
+
+// Conversion Jobs Map (nach Start der Konvertierung)
 const jobs = new Map<string, { outputPath: string; format: string; originalName: string }>();
 const MAX_JOBS_IN_MEMORY = 1000;
 
 /**
- * FIX Problem 6: Helper function to add jobs with size limit
+ * Helper function to add uploaded files with size limit
+ */
+function addUploadedFile(jobId: string, fileData: { inputPath: string; originalName: string; fileSize: number }) {
+  if (uploadedFiles.size >= MAX_JOBS_IN_MEMORY) {
+    const firstKey = uploadedFiles.keys().next().value;
+    if (firstKey) {
+      uploadedFiles.delete(firstKey);
+      console.log(`[Upload] ⚠️  Map limit reached, removed oldest: ${firstKey}`);
+    }
+  }
+  uploadedFiles.set(jobId, fileData);
+}
+
+/**
+ * Helper function to add jobs with size limit
  */
 function addJob(jobId: string, jobData: { outputPath: string; format: string; originalName: string }) {
-  // Wenn Limit erreicht, ältesten Job entfernen (FIFO)
   if (jobs.size >= MAX_JOBS_IN_MEMORY) {
     const firstKey = jobs.keys().next().value;
     if (firstKey) {
@@ -32,7 +48,8 @@ function addJob(jobId: string, jobData: { outputPath: string; format: string; or
   jobs.set(jobId, jobData);
 }
 
-router.post('/convert', upload.single('video'), async (req, res) => {
+// Upload-Endpunkt: Nur Datei hochladen, noch nicht konvertieren
+router.post('/upload', upload.single('video'), async (req, res) => {
   try {
     // Performance-Optimierung: Timeouts sofort deaktivieren für große Uploads
     req.setTimeout(0);
@@ -42,15 +59,13 @@ router.post('/convert', upload.single('video'), async (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const { jobId, targetFormat, quality, originalName } = req.body as {
+    const { jobId, originalName } = req.body as {
       jobId: string;
-      targetFormat: VideoFormat;
-      quality: VideoQuality;
       originalName?: string;
     };
 
-    if (!jobId || !targetFormat || !quality) {
-      return res.status(400).json({ error: 'Missing parameters' });
+    if (!jobId) {
+      return res.status(400).json({ error: 'Missing jobId' });
     }
 
     // Originalname aus Request oder Fallback auf Multer-Originalname
@@ -61,28 +76,78 @@ router.post('/convert', upload.single('video'), async (req, res) => {
     const hasSpace = await diskSpaceService.checkAvailableSpace(fileSizeGB);
 
     if (!hasSpace) {
+      // Datei löschen wenn kein Platz
+      try {
+        await fs.unlink(req.file.path);
+      } catch (e) { /* ignore */ }
       return res.status(507).json({
         error: 'Insufficient disk space',
-        message: 'Server has not enough free disk space for this conversion'
+        message: 'Server has not enough free disk space'
       });
+    }
+
+    // Datei-Info speichern (noch keine Konvertierung)
+    addUploadedFile(jobId, {
+      inputPath: req.file.path,
+      originalName: fileName,
+      fileSize: req.file.size
+    });
+
+    console.log(`[Upload] ✅ File uploaded: ${fileName} (${jobId})`);
+
+    res.json({
+      jobId,
+      status: 'uploaded',
+      filePath: req.file.path,
+      fileName,
+      fileSize: req.file.size
+    });
+  } catch (error) {
+    console.error('[Upload] Error:', error);
+    res.status(500).json({ error: 'Upload failed' });
+  }
+});
+
+// Konvertierung starten für bereits hochgeladene Datei
+router.post('/convert/:jobId', async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const { targetFormat, quality } = req.body as {
+      targetFormat: VideoFormat;
+      quality: VideoQuality;
+    };
+
+    if (!targetFormat || !quality) {
+      return res.status(400).json({ error: 'Missing targetFormat or quality' });
+    }
+
+    // Hochgeladene Datei finden
+    const uploadedFile = uploadedFiles.get(jobId);
+    if (!uploadedFile) {
+      return res.status(404).json({ error: 'Uploaded file not found' });
     }
 
     const outputFilename = `output-${jobId}.${targetFormat}`;
     const outputPath = path.join('outputs', outputFilename);
 
-    // Store job info (mit Size-Limit Check)
-    addJob(jobId, { outputPath, format: targetFormat, originalName: fileName });
+    // Job-Info speichern
+    addJob(jobId, { outputPath, format: targetFormat, originalName: uploadedFile.originalName });
 
-    // Start conversion (async)
+    // Aus Upload-Map entfernen
+    uploadedFiles.delete(jobId);
+
+    // Konvertierung starten (async)
     ffmpegService.convert({
       jobId,
-      inputPath: req.file.path,
+      inputPath: uploadedFile.inputPath,
       outputPath,
       targetFormat,
       quality
     }).catch((error) => {
       console.error(`[Convert] Failed for ${jobId}:`, error);
     });
+
+    console.log(`[Convert] ✅ Started conversion: ${jobId} → ${targetFormat}`);
 
     res.json({ jobId, status: 'processing' });
   } catch (error) {

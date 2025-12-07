@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { ConversionJob } from '@/types/conversion';
+import { computed, ref } from 'vue';
+import type { ConversionJob, VideoFormat, VideoQuality } from '@/types/conversion';
 import { useConversionStore } from '@/stores/conversion';
 
 const props = defineProps<{
@@ -9,8 +9,31 @@ const props = defineProps<{
 
 const conversionStore = useConversionStore();
 
+// Lokale State für Format-Auswahl
+const selectedFormat = ref<VideoFormat>(props.job.targetFormat);
+const selectedQuality = ref<VideoQuality>(props.job.quality);
+const isConverting = ref(false);
+
+const formats: { value: VideoFormat; label: string }[] = [
+  { value: 'mp4', label: 'MP4' },
+  { value: 'webm', label: 'WebM' },
+  { value: 'avi', label: 'AVI' },
+  { value: 'mov', label: 'MOV' },
+  { value: 'mkv', label: 'MKV' },
+  { value: 'ts', label: 'TS' }
+];
+
+const qualities: { value: VideoQuality; label: string }[] = [
+  { value: 'low', label: 'Niedrig' },
+  { value: 'medium', label: 'Mittel' },
+  { value: 'high', label: 'Hoch' },
+  { value: 'ultra', label: 'Ultra' }
+];
+
 const statusText = computed(() => {
   switch (props.job.status) {
+    case 'uploading': return `Hochladen... ${props.job.progress}%`;
+    case 'uploaded': return 'Bereit zur Konvertierung';
     case 'pending': return 'Warten...';
     case 'processing': return `Konvertierung... ${props.job.progress}%`;
     case 'completed': return 'Fertig';
@@ -30,6 +53,21 @@ const fileSizeMB = computed(() => {
     : `${(props.job.fileSize / 1024 / 1024).toFixed(1)} MB`;
 });
 
+const showProgress = computed(() => {
+  return props.job.status === 'uploading' || props.job.status === 'processing';
+});
+
+async function handleStartConversion() {
+  isConverting.value = true;
+  try {
+    await conversionStore.startConversion(props.job.id, selectedFormat.value, selectedQuality.value);
+  } catch (err) {
+    console.error('Konvertierung fehlgeschlagen:', err);
+  } finally {
+    isConverting.value = false;
+  }
+}
+
 function handleDownload() {
   conversionStore.downloadFile(props.job);
 }
@@ -45,7 +83,8 @@ function handleRemove() {
       <div class="file-info">
         <div class="file-name">{{ job.fileName }}</div>
         <div class="file-meta">
-          {{ fileSizeMB }} · {{ job.sourceFormat.toLowerCase() }} → {{ job.targetFormat.toLowerCase() }}
+          {{ fileSizeMB }} · {{ job.sourceFormat.toUpperCase() }}
+          <span v-if="job.status !== 'uploaded'"> → {{ job.targetFormat.toUpperCase() }}</span>
         </div>
       </div>
 
@@ -54,8 +93,39 @@ function handleRemove() {
       </div>
     </div>
 
-    <div v-if="job.status === 'processing'" class="progress-bar">
+    <div v-if="showProgress" class="progress-bar">
       <div class="progress-fill" :style="{ width: `${job.progress}%` }"></div>
+    </div>
+
+    <!-- Format-Auswahl für hochgeladene Dateien -->
+    <div v-if="job.status === 'uploaded'" class="format-selection">
+      <div class="selector-row">
+        <label>Format:</label>
+        <div class="format-buttons">
+          <button
+            v-for="format in formats"
+            :key="format.value"
+            :class="{ active: selectedFormat === format.value }"
+            @click="selectedFormat = format.value"
+          >
+            {{ format.label }}
+          </button>
+        </div>
+      </div>
+
+      <div class="selector-row">
+        <label>Qualität:</label>
+        <div class="format-buttons">
+          <button
+            v-for="quality in qualities"
+            :key="quality.value"
+            :class="{ active: selectedQuality === quality.value }"
+            @click="selectedQuality = quality.value"
+          >
+            {{ quality.label }}
+          </button>
+        </div>
+      </div>
     </div>
 
     <div v-if="job.error" class="error-text">
@@ -63,6 +133,19 @@ function handleRemove() {
     </div>
 
     <div class="item-actions">
+      <!-- Konvertieren Button für hochgeladene Dateien -->
+      <button
+        v-if="job.status === 'uploaded'"
+        class="btn-convert"
+        :disabled="isConverting"
+        @click="handleStartConversion"
+      >
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        {{ isConverting ? 'Wird gestartet...' : 'Konvertieren' }}
+      </button>
+
       <button
         v-if="job.status === 'completed'"
         class="btn-download"
@@ -130,6 +213,14 @@ function handleRemove() {
   white-space: nowrap;
 }
 
+.status-uploading {
+  color: var(--color-secondary);
+}
+
+.status-uploaded {
+  color: var(--color-primary);
+}
+
 .status-pending {
   color: var(--color-text-muted);
 }
@@ -160,6 +251,59 @@ function handleRemove() {
   transition: width 0.3s ease;
 }
 
+/* Format-Auswahl Styles */
+.format-selection {
+  background: var(--color-surface-hover);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.selector-row {
+  margin-bottom: 10px;
+}
+
+.selector-row:last-child {
+  margin-bottom: 0;
+}
+
+.selector-row label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.format-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.format-buttons button {
+  padding: 6px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.format-buttons button:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
+}
+
+.format-buttons button.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-text);
+}
+
 .error-text {
   color: var(--color-error);
   font-size: 13px;
@@ -187,9 +331,23 @@ button {
   gap: 6px;
 }
 
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .btn-icon {
   width: 16px;
   height: 16px;
+}
+
+.btn-convert {
+  background: var(--color-success);
+  color: white;
+}
+
+.btn-convert:hover:not(:disabled) {
+  background: #059669;
 }
 
 .btn-download {

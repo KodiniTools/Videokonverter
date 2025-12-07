@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { useConversionStore } from '@/stores/conversion';
 import { useThemeStore } from '@/stores/theme';
+import { useConversionStore } from '@/stores/conversion';
 import { useWebSocket } from '@/composables/useWebSocket';
 import FileUploader from '@/components/FileUploader.vue';
-import FormatSelector from '@/components/FormatSelector.vue';
 import ConversionQueue from '@/components/ConversionQueue.vue';
 
 const conversionStore = useConversionStore();
@@ -37,7 +36,6 @@ const { connected } = useWebSocket((update) => {
     </header>
 
     <main class="main">
-      <FormatSelector />
       <FileUploader />
       <ConversionQueue />
     </main>
