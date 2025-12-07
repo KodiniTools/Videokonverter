@@ -14,13 +14,13 @@ const diskSpaceService = new DiskSpaceService();
 export { ffmpegService };
 
 // Conversion Jobs Map with size limit to prevent unbounded memory growth
-const jobs = new Map<string, { outputPath: string; format: string }>();
+const jobs = new Map<string, { outputPath: string; format: string; originalName: string }>();
 const MAX_JOBS_IN_MEMORY = 1000;
 
 /**
  * FIX Problem 6: Helper function to add jobs with size limit
  */
-function addJob(jobId: string, jobData: { outputPath: string; format: string }) {
+function addJob(jobId: string, jobData: { outputPath: string; format: string; originalName: string }) {
   // Wenn Limit erreicht, ältesten Job entfernen (FIFO)
   if (jobs.size >= MAX_JOBS_IN_MEMORY) {
     const firstKey = jobs.keys().next().value;
@@ -42,15 +42,19 @@ router.post('/convert', upload.single('video'), async (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const { jobId, targetFormat, quality } = req.body as {
+    const { jobId, targetFormat, quality, originalName } = req.body as {
       jobId: string;
       targetFormat: VideoFormat;
       quality: VideoQuality;
+      originalName?: string;
     };
 
     if (!jobId || !targetFormat || !quality) {
       return res.status(400).json({ error: 'Missing parameters' });
     }
+
+    // Originalname aus Request oder Fallback auf Multer-Originalname
+    const fileName = originalName || req.file.originalname || 'video';
 
     // Check disk space
     const fileSizeGB = req.file.size / 1024 / 1024 / 1024;
@@ -67,7 +71,7 @@ router.post('/convert', upload.single('video'), async (req, res) => {
     const outputPath = path.join('outputs', outputFilename);
 
     // Store job info (mit Size-Limit Check)
-    addJob(jobId, { outputPath, format: targetFormat });
+    addJob(jobId, { outputPath, format: targetFormat, originalName: fileName });
 
     // Start conversion (async)
     ffmpegService.convert({
@@ -95,7 +99,9 @@ router.get('/download/:jobId', (req, res) => {
     return res.status(404).json({ error: 'Job not found' });
   }
 
-  const filename = `converted.${job.format}`;
+  // Originalnamen verwenden: Dateiname ohne alte Endung + neue Endung
+  const baseName = job.originalName.replace(/\.[^.]+$/, '');
+  const filename = `${baseName}.${job.format}`;
   res.download(job.outputPath, filename, async (err) => {
     if (err) {
       console.error('[Download] Error:', err);
