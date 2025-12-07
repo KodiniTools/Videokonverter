@@ -9,6 +9,17 @@ const uploading = ref(false);
 const error = ref<string | null>(null);
 
 const acceptedFormats = '.mp4,.webm,.avi,.mov,.mkv,.flv,.wmv,.ts';
+const acceptedExtensions = ['mp4', 'webm', 'avi', 'mov', 'mkv', 'flv', 'wmv', 'ts'];
+
+function isVideoFile(file: File): boolean {
+  // Prüfe MIME-Type
+  if (file.type.startsWith('video/')) {
+    return true;
+  }
+  // Fallback: Prüfe Dateiendung (für MOV, MKV etc. die manchmal nicht erkannt werden)
+  const extension = file.name.split('.').pop()?.toLowerCase();
+  return extension ? acceptedExtensions.includes(extension) : false;
+}
 
 function handleDragOver(e: DragEvent) {
   e.preventDefault();
@@ -38,7 +49,7 @@ async function processFiles(files: File[]) {
   uploading.value = true;
 
   for (const file of files) {
-    if (!file.type.startsWith('video/')) {
+    if (!isVideoFile(file)) {
       error.value = `${file.name}: Keine Videodatei`;
       continue;
     }
