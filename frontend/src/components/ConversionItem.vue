@@ -54,7 +54,7 @@ const fileSizeMB = computed(() => {
 });
 
 const showProgress = computed(() => {
-  return props.job.status === 'uploading' || props.job.status === 'processing';
+  return props.job.status === 'uploading' || props.job.status === 'pending' || props.job.status === 'processing';
 });
 
 async function handleStartConversion() {
@@ -222,7 +222,7 @@ function handleRemove() {
 }
 
 .status-pending {
-  color: var(--color-text-muted);
+  color: var(--color-secondary);
 }
 
 .status-processing {
