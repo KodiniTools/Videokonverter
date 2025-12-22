@@ -81,12 +81,6 @@ const appUrl = 'https://kodinitools.com/videokonverter/';
           </div>
           <h3 class="feature-title">{{ t('feature1Title') }}</h3>
           <p class="feature-description">{{ t('feature1Description') }}</p>
-          <a :href="appUrl" class="feature-link">
-            {{ t('heroCta') }}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </a>
         </article>
 
         <!-- Feature Card 2 -->
@@ -98,12 +92,6 @@ const appUrl = 'https://kodinitools.com/videokonverter/';
           </div>
           <h3 class="feature-title">{{ t('feature2Title') }}</h3>
           <p class="feature-description">{{ t('feature2Description') }}</p>
-          <a :href="appUrl" class="feature-link">
-            {{ t('heroCta') }}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </a>
         </article>
 
         <!-- Feature Card 3 -->
@@ -115,20 +103,9 @@ const appUrl = 'https://kodinitools.com/videokonverter/';
           </div>
           <h3 class="feature-title">{{ t('feature3Title') }}</h3>
           <p class="feature-description">{{ t('feature3Description') }}</p>
-          <a :href="appUrl" class="feature-link">
-            {{ t('heroCta') }}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </a>
         </article>
       </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="landing-footer">
-      <p>&copy; {{ new Date().getFullYear() }} Video Converter. Powered by FFmpeg.</p>
-    </footer>
   </div>
 </template>
 
@@ -399,43 +376,6 @@ const appUrl = 'https://kodinitools.com/videokonverter/';
   font-size: 15px;
   color: var(--color-text-secondary);
   line-height: 1.6;
-  flex: 1;
-}
-
-.feature-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--color-text);
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  margin-top: 8px;
-}
-
-.feature-link:hover {
-  color: var(--color-primary);
-}
-
-.feature-link svg {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.2s ease;
-}
-
-.feature-link:hover svg {
-  transform: translateX(4px);
-}
-
-/* Footer */
-.landing-footer {
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border-light);
-  padding: 24px 32px;
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: 14px;
 }
 
 /* Responsive */
