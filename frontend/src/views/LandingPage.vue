@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { useI18n } from '@/composables/useI18n';
 import { useThemeStore } from '@/stores/theme';
+import { RouterLink } from 'vue-router';
 
 const { t, locale, toggleLocale } = useI18n();
 const themeStore = useThemeStore();
-
-const appUrl = 'https://kodinitools.com/videokonverter/';
 </script>
 
 <template>
@@ -43,12 +42,12 @@ const appUrl = 'https://kodinitools.com/videokonverter/';
         <div class="hero-badge">FFmpeg Powered</div>
         <h1 class="hero-title">{{ t('heroTitle') }}</h1>
         <p class="hero-subtitle">{{ t('heroSubtitle') }}</p>
-        <a :href="appUrl" class="hero-cta">
+        <RouterLink to="/converter" class="hero-cta">
           {{ t('heroCta') }}
           <svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
-        </a>
+        </RouterLink>
       </div>
       <div class="hero-visual">
         <div class="visual-card">
