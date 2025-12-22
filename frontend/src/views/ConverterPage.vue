@@ -3,6 +3,7 @@ import { useThemeStore } from '@/stores/theme';
 import { useConversionStore } from '@/stores/conversion';
 import { useWebSocket } from '@/composables/useWebSocket';
 import { useI18n } from '@/composables/useI18n';
+import { RouterLink } from 'vue-router';
 import FileUploader from '@/components/FileUploader.vue';
 import ConversionQueue from '@/components/ConversionQueue.vue';
 
@@ -19,7 +20,15 @@ const { connected } = useWebSocket((update) => {
 <template>
   <div class="converter-page">
     <header class="header">
-      <h1>Video Converter</h1>
+      <div class="header-left">
+        <RouterLink to="/" class="home-link" title="Zur Startseite">
+          <svg class="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="9 22 9 12 15 12 15 22" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </RouterLink>
+        <h1>Video Converter</h1>
+      </div>
       <div class="header-controls">
         <button
           class="lang-toggle"
@@ -70,6 +79,36 @@ const { connected } = useWebSocket((update) => {
   justify-content: space-between;
   align-items: center;
   transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.home-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.home-link:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
+}
+
+.home-icon {
+  width: 20px;
+  height: 20px;
 }
 
 h1 {
