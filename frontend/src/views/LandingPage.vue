@@ -1,0 +1,465 @@
+<script setup lang="ts">
+import { useI18n } from '@/composables/useI18n';
+import { useThemeStore } from '@/stores/theme';
+
+const { t, locale, toggleLocale } = useI18n();
+const themeStore = useThemeStore();
+
+const appUrl = 'https://kodinitools.com/videokonverter/';
+</script>
+
+<template>
+  <div class="landing">
+    <!-- Header with controls -->
+    <header class="landing-header">
+      <h1 class="logo">{{ t('heroTitle') }}</h1>
+      <div class="header-controls">
+        <button
+          class="lang-toggle"
+          @click="toggleLocale"
+          :title="locale === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'"
+        >
+          {{ locale === 'de' ? 'EN' : 'DE' }}
+        </button>
+        <button
+          class="theme-toggle"
+          @click="themeStore.toggleTheme"
+          :title="themeStore.theme === 'light' ? t('switchToDark') : t('switchToLight')"
+        >
+          <svg v-if="themeStore.theme === 'light'" class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <svg v-else class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="5" stroke-width="2"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-badge">FFmpeg Powered</div>
+        <h1 class="hero-title">{{ t('heroTitle') }}</h1>
+        <p class="hero-subtitle">{{ t('heroSubtitle') }}</p>
+        <a :href="appUrl" class="hero-cta">
+          {{ t('heroCta') }}
+          <svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+      <div class="hero-visual">
+        <div class="visual-card">
+          <div class="visual-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z"/>
+              <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/>
+            </svg>
+          </div>
+          <div class="visual-formats">
+            <span class="format-tag">MP4</span>
+            <span class="format-tag">WebM</span>
+            <span class="format-tag">AVI</span>
+            <span class="format-tag">MOV</span>
+            <span class="format-tag">MKV</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="features">
+      <div class="features-grid">
+        <!-- Feature Card 1 -->
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">{{ t('feature1Title') }}</h3>
+          <p class="feature-description">{{ t('feature1Description') }}</p>
+          <a :href="appUrl" class="feature-link">
+            {{ t('heroCta') }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </article>
+
+        <!-- Feature Card 2 -->
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">{{ t('feature2Title') }}</h3>
+          <p class="feature-description">{{ t('feature2Description') }}</p>
+          <a :href="appUrl" class="feature-link">
+            {{ t('heroCta') }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </article>
+
+        <!-- Feature Card 3 -->
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">{{ t('feature3Title') }}</h3>
+          <p class="feature-description">{{ t('feature3Description') }}</p>
+          <a :href="appUrl" class="feature-link">
+            {{ t('heroCta') }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+      <p>&copy; {{ new Date().getFullYear() }} Video Converter. Powered by FFmpeg.</p>
+    </footer>
+  </div>
+</template>
+
+<style scoped>
+.landing {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lang-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lang-toggle:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface-hover);
+}
+
+.theme-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-text);
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 64px;
+  padding: 80px 32px;
+  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%);
+  flex-wrap: wrap;
+}
+
+.hero-content {
+  flex: 1;
+  min-width: 300px;
+  max-width: 600px;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background: var(--color-primary);
+  color: #0C0C10;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hero-title {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+
+.hero-subtitle {
+  font-size: 18px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 32px;
+  background: var(--color-primary);
+  color: #0C0C10;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(242, 226, 142, 0.3);
+}
+
+.hero-cta:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(242, 226, 142, 0.4);
+}
+
+.cta-arrow {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.hero-cta:hover .cta-arrow {
+  transform: translateX(4px);
+}
+
+.hero-visual {
+  flex: 1;
+  min-width: 280px;
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
+}
+
+.visual-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: 20px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.visual-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.visual-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.visual-icon svg {
+  width: 40px;
+  height: 40px;
+  color: #0C0C10;
+}
+
+.visual-formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.format-tag {
+  padding: 6px 12px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border-light);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+/* Features Section */
+.features {
+  flex: 1;
+  padding: 80px 32px;
+  background: var(--color-background);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-primary);
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--color-primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-icon svg {
+  width: 28px;
+  height: 28px;
+  color: #0C0C10;
+}
+
+.feature-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.feature-description {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.feature-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+
+.feature-link:hover {
+  color: var(--color-primary);
+}
+
+.feature-link svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.feature-link:hover svg {
+  transform: translateX(4px);
+}
+
+/* Footer */
+.landing-footer {
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border-light);
+  padding: 24px 32px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    padding: 48px 24px;
+    text-align: center;
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+
+  .hero-visual {
+    max-width: 100%;
+  }
+
+  .features {
+    padding: 48px 24px;
+  }
+
+  .feature-card {
+    padding: 24px;
+  }
+}
+</style>
