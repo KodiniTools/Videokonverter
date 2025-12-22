@@ -42,29 +42,22 @@ const themeStore = useThemeStore();
         <div class="hero-badge">FFmpeg Powered</div>
         <h1 class="hero-title">{{ t('heroTitle') }}</h1>
         <p class="hero-subtitle">{{ t('heroSubtitle') }}</p>
+        <div class="hero-formats">
+          <span class="format-tag">MP4</span>
+          <span class="format-tag">WebM</span>
+          <span class="format-tag">AVI</span>
+          <span class="format-tag">MOV</span>
+          <span class="format-tag">MKV</span>
+          <span class="format-tag">FLV</span>
+          <span class="format-tag">WMV</span>
+          <span class="format-tag">TS</span>
+        </div>
         <RouterLink to="/converter" class="hero-cta">
           {{ t('heroCta') }}
           <svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </RouterLink>
-      </div>
-      <div class="hero-visual">
-        <div class="visual-card">
-          <div class="visual-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z"/>
-              <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/>
-            </svg>
-          </div>
-          <div class="visual-formats">
-            <span class="format-tag">MP4</span>
-            <span class="format-tag">WebM</span>
-            <span class="format-tag">AVI</span>
-            <span class="format-tag">MOV</span>
-            <span class="format-tag">MKV</span>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -186,17 +179,14 @@ const themeStore = useThemeStore();
 .hero {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 64px;
+  justify-content: center;
   padding: 80px 32px;
-  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-background) 100%);
-  flex-wrap: wrap;
+  background: var(--color-surface);
 }
 
 .hero-content {
-  flex: 1;
-  min-width: 300px;
-  max-width: 600px;
+  max-width: 700px;
+  text-align: center;
 }
 
 .hero-badge {
@@ -258,53 +248,12 @@ const themeStore = useThemeStore();
   transform: translateX(4px);
 }
 
-.hero-visual {
-  flex: 1;
-  min-width: 280px;
-  max-width: 400px;
-  display: flex;
-  justify-content: center;
-}
-
-.visual-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-light);
-  border-radius: 20px;
-  padding: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-}
-
-.visual-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-}
-
-.visual-icon {
-  width: 80px;
-  height: 80px;
-  background: var(--color-primary);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.visual-icon svg {
-  width: 40px;
-  height: 40px;
-  color: #0C0C10;
-}
-
-.visual-formats {
+.hero-formats {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
+  margin-bottom: 32px;
 }
 
 .format-tag {
@@ -380,17 +329,7 @@ const themeStore = useThemeStore();
 /* Responsive */
 @media (max-width: 768px) {
   .hero {
-    flex-direction: column;
     padding: 48px 24px;
-    text-align: center;
-  }
-
-  .hero-content {
-    max-width: 100%;
-  }
-
-  .hero-visual {
-    max-width: 100%;
   }
 
   .features {
