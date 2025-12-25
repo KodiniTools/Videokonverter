@@ -1,7 +1,24 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import type { ProgressUpdate } from '@/types/conversion';
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:3000';
+// Dynamische WebSocket-URL basierend auf dem aktuellen Host
+function getWebSocketUrl(): string {
+  // Explizite Konfiguration hat Vorrang
+  if (import.meta.env.VITE_WS_URL) {
+    return import.meta.env.VITE_WS_URL;
+  }
+
+  // In Entwicklung: localhost
+  if (import.meta.env.DEV) {
+    return 'ws://localhost:3000';
+  }
+
+  // In Production: Dynamisch basierend auf aktuellem Host
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const host = window.location.host;
+  const apiPath = import.meta.env.VITE_API_URL || '';
+  return `${protocol}//${host}${apiPath}`;
+}
 
 export function useWebSocket(onProgress: (update: ProgressUpdate) => void) {
   const ws = ref<WebSocket | null>(null);
@@ -10,7 +27,9 @@ export function useWebSocket(onProgress: (update: ProgressUpdate) => void) {
 
   function connect() {
     try {
-      ws.value = new WebSocket(WS_URL);
+      const wsUrl = getWebSocketUrl();
+      console.log('[WS] Connecting to:', wsUrl);
+      ws.value = new WebSocket(wsUrl);
 
       ws.value.onopen = () => {
         connected.value = true;
