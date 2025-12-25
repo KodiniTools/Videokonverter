@@ -83,8 +83,7 @@ function handleRemove() {
       <div class="file-info">
         <div class="file-name">{{ job.fileName }}</div>
         <div class="file-meta">
-          {{ fileSizeMB }} · {{ job.sourceFormat.toUpperCase() }}
-          <span v-if="job.status !== 'uploaded'"> → {{ job.targetFormat.toUpperCase() }}</span>
+          {{ fileSizeMB }}
         </div>
       </div>
 
