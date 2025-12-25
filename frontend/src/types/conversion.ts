@@ -14,6 +14,7 @@ export interface ConversionJob {
   error?: string;
   downloadUrl?: string;
   uploadedFilePath?: string;
+  convertedFileSize?: number;
   createdAt: number;
 }
 
@@ -29,4 +30,5 @@ export interface ProgressUpdate {
   status: ConversionStatus;
   error?: string;
   downloadUrl?: string;
+  convertedFileSize?: number;
 }

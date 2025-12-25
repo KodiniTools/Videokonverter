@@ -1,4 +1,5 @@
 import { spawn } from 'child_process';
+import fs from 'fs/promises';
 import { QUALITY_PRESETS, type ConversionOptions } from '../types/conversion.js';
 import { broadcastProgress } from '../websocket.js';
 import { ProcessManagerService } from './process-manager.service.js';
@@ -179,6 +180,16 @@ export class FFmpegService {
         if (code === 0) {
           console.log(`[FFmpeg] ✅ Completed: ${jobId}`);
 
+          // Konvertierte Dateigröße ermitteln
+          let convertedFileSize: number | undefined;
+          try {
+            const stats = await fs.stat(finalOutputPath);
+            convertedFileSize = stats.size;
+            console.log(`[FFmpeg] Output size: ${(convertedFileSize / 1024 / 1024).toFixed(1)} MB`);
+          } catch (e) {
+            console.error(`[FFmpeg] Could not get output file size:`, e);
+          }
+
           // Auto-Cleanup: Input-Datei nach erfolgreicher Konvertierung löschen
           await this.processManager.cleanupInput(jobId);
 
@@ -189,7 +200,8 @@ export class FFmpegService {
             jobId,
             progress: 100,
             status: 'completed',
-            downloadUrl: `/api/download/${jobId}`
+            downloadUrl: `/api/download/${jobId}`,
+            convertedFileSize
           });
           resolve();
         } else {

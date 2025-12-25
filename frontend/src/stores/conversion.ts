@@ -143,7 +143,8 @@ export const useConversionStore = defineStore('conversion', () => {
       progress: update.progress,
       status: update.status,
       error: update.error,
-      downloadUrl: update.downloadUrl
+      downloadUrl: update.downloadUrl,
+      convertedFileSize: update.convertedFileSize
     });
   }
 

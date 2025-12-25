@@ -53,6 +53,19 @@ const fileSizeMB = computed(() => {
     : `${(props.job.fileSize / 1024 / 1024).toFixed(1)} MB`;
 });
 
+const convertedFileSizeMB = computed(() => {
+  if (!props.job.convertedFileSize) return null;
+  const gb = props.job.convertedFileSize / 1024 / 1024 / 1024;
+  return gb > 1
+    ? `${gb.toFixed(2)} GB`
+    : `${(props.job.convertedFileSize / 1024 / 1024).toFixed(1)} MB`;
+});
+
+const convertedFileName = computed(() => {
+  const baseName = props.job.fileName.replace(/\.[^.]+$/, '');
+  return `${baseName}.${props.job.targetFormat}`;
+});
+
 const showProgress = computed(() => {
   return props.job.status === 'uploading' || props.job.status === 'pending' || props.job.status === 'processing';
 });
@@ -81,9 +94,9 @@ function handleRemove() {
   <div class="conversion-item">
     <div class="item-header">
       <div class="file-info">
-        <div class="file-name">{{ job.fileName }}</div>
+        <div class="file-name">{{ job.status === 'completed' ? convertedFileName : job.fileName }}</div>
         <div class="file-meta">
-          {{ fileSizeMB }}
+          {{ job.status === 'completed' && convertedFileSizeMB ? convertedFileSizeMB : fileSizeMB }}
         </div>
       </div>
 
