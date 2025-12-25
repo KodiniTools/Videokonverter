@@ -99,7 +99,7 @@ export class FFmpegService {
 
     console.log(`[FFmpeg] Command: ffmpeg ${args.join(' ')}`);
 
-    return this.runFFmpeg(jobId, args, inputPath);
+    return this.runFFmpeg(jobId, args, inputPath, outputPath);
   }
 
   /**
@@ -179,15 +179,16 @@ export class FFmpegService {
 
         if (code === 0) {
           console.log(`[FFmpeg] ✅ Completed: ${jobId}`);
+          console.log(`[FFmpeg] Output path: ${finalOutputPath}`);
 
           // Konvertierte Dateigröße ermitteln
           let convertedFileSize: number | undefined;
           try {
             const stats = await fs.stat(finalOutputPath);
             convertedFileSize = stats.size;
-            console.log(`[FFmpeg] Output size: ${(convertedFileSize / 1024 / 1024).toFixed(1)} MB`);
+            console.log(`[FFmpeg] ✅ Output size: ${(convertedFileSize / 1024 / 1024).toFixed(1)} MB`);
           } catch (e) {
-            console.error(`[FFmpeg] Could not get output file size:`, e);
+            console.error(`[FFmpeg] ❌ Could not get output file size for ${finalOutputPath}:`, e);
           }
 
           // Auto-Cleanup: Input-Datei nach erfolgreicher Konvertierung löschen
