@@ -2,7 +2,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024 * 1024; // 50GB
+const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB
 
 // Performance-Optimierung: Größere Buffer für schnellere I/O-Operationen
 // 16MB Chunks statt Standard 64KB für bessere Upload-Geschwindigkeit bei großen Dateien
