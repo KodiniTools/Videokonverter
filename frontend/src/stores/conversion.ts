@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import type { ConversionJob, ConversionSettings, ProgressUpdate, VideoFormat, VideoQuality } from '@/types/conversion';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-const MAX_FILE_SIZE = 50 * 1024 * 1024 * 1024; // 50GB
+const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB
 
 export const useConversionStore = defineStore('conversion', () => {
   const jobs = ref<ConversionJob[]>([]);

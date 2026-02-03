@@ -59,7 +59,7 @@ const { connected } = useWebSocket((update) => {
     </main>
 
     <footer class="footer">
-      <p>Serverbasierte Videokonvertierung mit FFmpeg · Max. Dateigröße: 50 GB</p>
+      <p>Serverbasierte Videokonvertierung mit FFmpeg · Max. Dateigröße: 5 GB</p>
     </footer>
   </div>
 </template>

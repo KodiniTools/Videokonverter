@@ -11,7 +11,7 @@ const translations = {
 
     // Feature Cards
     feature1Title: 'Blitzschnelle Konvertierung',
-    feature1Description: 'Unsere serverbasierte FFmpeg-Technologie konvertiert Videos in Rekordzeit. Unterstützt Dateien bis zu 50 GB mit Echtzeit-Fortschrittsanzeige.',
+    feature1Description: 'Unsere serverbasierte FFmpeg-Technologie konvertiert Videos in Rekordzeit. Unterstützt Dateien bis zu 5 GB mit Echtzeit-Fortschrittsanzeige.',
 
     feature2Title: 'Vielfältige Formate',
     feature2Description: 'Konvertieren Sie zwischen allen gängigen Formaten: MP4, WebM, AVI, MOV, MKV, FLV, WMV und TS. Vier Qualitätsstufen zur Auswahl.',
@@ -36,7 +36,7 @@ const translations = {
 
     // Feature Cards
     feature1Title: 'Lightning-Fast Conversion',
-    feature1Description: 'Our server-based FFmpeg technology converts videos in record time. Supports files up to 50 GB with real-time progress tracking.',
+    feature1Description: 'Our server-based FFmpeg technology converts videos in record time. Supports files up to 5 GB with real-time progress tracking.',
 
     feature2Title: 'Multiple Formats',
     feature2Description: 'Convert between all common formats: MP4, WebM, AVI, MOV, MKV, FLV, WMV and TS. Four quality levels to choose from.',

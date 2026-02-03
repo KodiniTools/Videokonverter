@@ -94,7 +94,7 @@ function triggerFileInput() {
 
         <h3>{{ uploading ? 'Wird hochgeladen...' : 'Videodateien hier ablegen' }}</h3>
         <p>oder klicken zum Durchsuchen</p>
-        <p class="formats">Unterstützt: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS (Max: 50 GB)</p>
+        <p class="formats">Unterstützt: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS (Max: 5 GB)</p>
       </div>
 
       <input
