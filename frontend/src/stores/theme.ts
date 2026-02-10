@@ -31,6 +31,15 @@ export const useThemeStore = defineStore('theme', () => {
   // Apply theme on initialization
   applyTheme(theme.value);
 
+  // Listen for theme changes from the SSI global navigation
+  window.addEventListener('theme-changed', ((e: CustomEvent) => {
+    const newTheme = e.detail?.theme;
+    if (newTheme === 'light' || newTheme === 'dark') {
+      theme.value = newTheme;
+      applyTheme(newTheme);
+    }
+  }) as EventListener);
+
   // Watch for system preference changes
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
     if (!localStorage.getItem('theme')) {
