@@ -57,6 +57,16 @@ const translations = {
 
 const currentLocale = ref<Locale>((localStorage.getItem('locale') as Locale) || 'de');
 
+// Listen for language changes from the SSI global navigation
+window.addEventListener('language-changed', ((e: CustomEvent) => {
+  const lang = e.detail?.lang;
+  if (lang === 'de' || lang === 'en') {
+    currentLocale.value = lang;
+    localStorage.setItem('locale', lang);
+    document.documentElement.lang = lang;
+  }
+}) as EventListener);
+
 export function useI18n() {
   const locale = computed(() => currentLocale.value);
 

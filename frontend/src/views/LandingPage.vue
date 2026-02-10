@@ -1,41 +1,12 @@
 <script setup lang="ts">
 import { useI18n } from '@/composables/useI18n';
-import { useThemeStore } from '@/stores/theme';
 import { RouterLink } from 'vue-router';
 
-const { t, locale, toggleLocale } = useI18n();
-const themeStore = useThemeStore();
+const { t } = useI18n();
 </script>
 
 <template>
   <div class="landing">
-    <!-- Header with controls -->
-    <header class="landing-header">
-      <h1 class="logo">{{ t('heroTitle') }}</h1>
-      <div class="header-controls">
-        <button
-          class="lang-toggle"
-          @click="toggleLocale"
-          :title="locale === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'"
-        >
-          {{ locale === 'de' ? 'EN' : 'DE' }}
-        </button>
-        <button
-          class="theme-toggle"
-          @click="themeStore.toggleTheme"
-          :title="themeStore.theme === 'light' ? t('switchToDark') : t('switchToLight')"
-        >
-          <svg v-if="themeStore.theme === 'light'" class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <svg v-else class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <circle cx="12" cy="12" r="5" stroke-width="2"/>
-            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </div>
-    </header>
-
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-content">
@@ -106,73 +77,6 @@ const themeStore = useThemeStore();
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-/* Header */
-.landing-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 32px;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border-light);
-}
-
-.logo {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.header-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.lang-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: 2px solid var(--color-border);
-  border-radius: 8px;
-  background: var(--color-surface);
-  color: var(--color-text);
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.lang-toggle:hover {
-  border-color: var(--color-primary);
-  background: var(--color-surface-hover);
-}
-
-.theme-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: 2px solid var(--color-border);
-  border-radius: 8px;
-  background: var(--color-surface);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.theme-toggle:hover {
-  border-color: var(--color-primary);
-  background: var(--color-surface-hover);
-}
-
-.theme-icon {
-  width: 20px;
-  height: 20px;
-  color: var(--color-text);
 }
 
 /* Hero Section */
