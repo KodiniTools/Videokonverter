@@ -34,23 +34,27 @@ useThemeStore();
 }
 
 [data-theme="dark"] {
-  --color-primary: #F2E28E;
-  --color-primary-hover: #fff4a3;
-  --color-secondary: #A28680;
-  --color-secondary-hover: #b89d96;
-  --color-text: #AEAFB7;
-  --color-text-secondary: #8a8b94;
-  --color-text-muted: #5E5F69;
-  --color-background: #0C0C10;
-  --color-surface: #1a1a1f;
-  --color-surface-hover: #252529;
-  --color-border: #5E5F69;
-  --color-border-light: #3a3a40;
+  /* Dark Theme Colors
+     Based on: #091428 (deep navy bg), #0E1C32 (secondary bg),
+     #142640 (card bg), #c9984d (gold accent), #014f99 (blue),
+     #f8e1a9 (light gold), #f9f2d5 (cream text) */
+  --color-primary: #c9984d;
+  --color-primary-hover: #f8e1a9;
+  --color-secondary: #014f99;
+  --color-secondary-hover: #0168c9;
+  --color-text: #f9f2d5;
+  --color-text-secondary: #f8e1a9;
+  --color-text-muted: #7A8DA0;
+  --color-background: #091428;
+  --color-surface: #142640;
+  --color-surface-hover: #1a3050;
+  --color-border: #1e3a5a;
+  --color-border-light: #162d4a;
   --color-success: #34d399;
   --color-error: #f87171;
-  --color-error-bg: #450a0a;
-  --color-error-border: #7f1d1d;
-  --color-text-on-primary: #0C0C10;
+  --color-error-bg: #1a0808;
+  --color-error-border: #5c1a1a;
+  --color-text-on-primary: #091428;
 }
 
 * {
@@ -68,6 +72,6 @@ body {
 }
 
 [data-theme="dark"] body {
-  background: var(--color-background);
+  background: linear-gradient(180deg, #0E1C32 0%, #091428 100%);
 }
 </style>
