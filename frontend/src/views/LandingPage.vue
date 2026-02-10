@@ -192,8 +192,8 @@ const themeStore = useThemeStore();
 .hero-badge {
   display: inline-block;
   padding: 6px 14px;
-  background: var(--color-primary);
-  color: #0C0C10;
+  background: var(--color-secondary);
+  color: #003971;
   font-size: 12px;
   font-weight: 600;
   border-radius: 20px;
@@ -223,19 +223,19 @@ const themeStore = useThemeStore();
   gap: 10px;
   padding: 16px 32px;
   background: var(--color-primary);
-  color: #0C0C10;
+  color: var(--color-text-on-primary);
   font-size: 16px;
   font-weight: 600;
   text-decoration: none;
   border-radius: 12px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 14px rgba(242, 226, 142, 0.3);
+  box-shadow: 0 4px 14px rgba(1, 79, 153, 0.3);
 }
 
 .hero-cta:hover {
   background: var(--color-primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(242, 226, 142, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 57, 113, 0.4);
 }
 
 .cta-arrow {
@@ -311,7 +311,7 @@ const themeStore = useThemeStore();
 .feature-icon svg {
   width: 28px;
   height: 28px;
-  color: #0C0C10;
+  color: var(--color-text-on-primary);
 }
 
 .feature-title {
