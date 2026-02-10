@@ -313,7 +313,7 @@ function handleRemove() {
 .format-buttons button.active {
   border-color: var(--color-primary);
   background: var(--color-primary);
-  color: var(--color-text);
+  color: var(--color-text-on-primary);
 }
 
 .error-text {
@@ -364,7 +364,7 @@ button:disabled {
 
 .btn-download {
   background: var(--color-primary);
-  color: var(--color-text);
+  color: var(--color-text-on-primary);
 }
 
 .btn-download:hover {

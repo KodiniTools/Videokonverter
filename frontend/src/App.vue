@@ -11,23 +11,26 @@ useThemeStore();
 
 <style>
 :root {
-  /* Light Theme Colors */
-  --color-primary: #F2E28E;
-  --color-primary-hover: #e6d67a;
-  --color-secondary: #A28680;
-  --color-secondary-hover: #8f746e;
-  --color-text: #0C0C10;
-  --color-text-secondary: #5E5F69;
-  --color-text-muted: #AEAFB7;
-  --color-background: #f5f5f7;
+  /* Light Theme Colors
+     Based on: #c9984d (gold), #014f99 (blue), #003971 (navy),
+     #f8e1a9 (light gold), #f9f2d5 (cream) */
+  --color-primary: #014f99;
+  --color-primary-hover: #003971;
+  --color-secondary: #c9984d;
+  --color-secondary-hover: #b58842;
+  --color-text: #003971;
+  --color-text-secondary: #4a6a8a;
+  --color-text-muted: #6b7d92;
+  --color-background: #F5F4D6;
   --color-surface: #ffffff;
-  --color-surface-hover: #faf9f5;
-  --color-border: #AEAFB7;
-  --color-border-light: #d4d4d8;
+  --color-surface-hover: #f9f2d5;
+  --color-border: #c9984d;
+  --color-border-light: #f8e1a9;
   --color-success: #10b981;
   --color-error: #ef4444;
   --color-error-bg: #fee2e2;
   --color-error-border: #fecaca;
+  --color-text-on-primary: #F5F4D6;
 }
 
 [data-theme="dark"] {
@@ -47,6 +50,7 @@ useThemeStore();
   --color-error: #f87171;
   --color-error-bg: #450a0a;
   --color-error-border: #7f1d1d;
+  --color-text-on-primary: #0C0C10;
 }
 
 * {
@@ -57,8 +61,13 @@ useThemeStore();
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: var(--color-background);
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-background) 100%);
+  min-height: 100vh;
   color: var(--color-text);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] body {
+  background: var(--color-background);
 }
 </style>
