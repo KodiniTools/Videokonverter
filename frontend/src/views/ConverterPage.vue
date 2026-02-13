@@ -24,10 +24,6 @@ const { connected } = useWebSocket((update) => {
       <FileUploader />
       <ConversionQueue />
     </main>
-
-    <footer class="footer">
-      <p>{{ t('footerText') }}</p>
-    </footer>
   </div>
 </template>
 
@@ -64,25 +60,12 @@ const { connected } = useWebSocket((update) => {
   padding: 48px 32px;
 }
 
-.footer {
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  padding: 16px 32px;
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: 13px;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
   .main {
     padding: 32px 20px;
   }
 
-  .footer {
-    padding: 14px 20px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -93,11 +76,6 @@ const { connected } = useWebSocket((update) => {
   .connection-status {
     font-size: 12px;
     margin-bottom: 16px;
-  }
-
-  .footer {
-    padding: 12px 16px;
-    font-size: 12px;
   }
 }
 </style>

@@ -31,7 +31,6 @@ const translations = {
     // Converter Page
     connected: 'Verbunden',
     disconnected: 'Getrennt',
-    footerText: 'Serverbasierte Videokonvertierung mit FFmpeg · Max. Dateigröße: 5 GB',
 
     // File Uploader
     notVideoFile: 'Keine Videodatei',
@@ -106,7 +105,6 @@ const translations = {
     // Converter Page
     connected: 'Connected',
     disconnected: 'Disconnected',
-    footerText: 'Server-based video conversion with FFmpeg · Max. file size: 5 GB',
 
     // File Uploader
     notVideoFile: 'Not a video file',
