@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { useConversionStore } from '@/stores/conversion';
+import { useI18n } from '@/composables/useI18n';
 import ConversionItem from './ConversionItem.vue';
 
 const conversionStore = useConversionStore();
+const { t } = useI18n();
 </script>
 
 <template>
   <div v-if="conversionStore.jobs.length > 0" class="conversion-queue">
-    <h2>Konvertierungswarteschlange</h2>
+    <h2>{{ t('conversionQueue') }}</h2>
 
     <div class="queue-list">
       <ConversionItem

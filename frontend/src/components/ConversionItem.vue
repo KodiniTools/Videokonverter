@@ -2,12 +2,14 @@
 import { computed, ref } from 'vue';
 import type { ConversionJob, VideoFormat, VideoQuality } from '@/types/conversion';
 import { useConversionStore } from '@/stores/conversion';
+import { useI18n } from '@/composables/useI18n';
 
 const props = defineProps<{
   job: ConversionJob;
 }>();
 
 const conversionStore = useConversionStore();
+const { t } = useI18n();
 
 // Lokale State für Format-Auswahl
 const selectedFormat = ref<VideoFormat>(props.job.targetFormat);
@@ -23,21 +25,21 @@ const formats: { value: VideoFormat; label: string }[] = [
   { value: 'ts', label: 'TS' }
 ];
 
-const qualities: { value: VideoQuality; label: string }[] = [
-  { value: 'low', label: 'Niedrig' },
-  { value: 'medium', label: 'Mittel' },
-  { value: 'high', label: 'Hoch' },
-  { value: 'ultra', label: 'Ultra' }
-];
+const qualities = computed(() => [
+  { value: 'low' as VideoQuality, label: t('qualityLow') },
+  { value: 'medium' as VideoQuality, label: t('qualityMedium') },
+  { value: 'high' as VideoQuality, label: t('qualityHigh') },
+  { value: 'ultra' as VideoQuality, label: t('qualityUltra') }
+]);
 
 const statusText = computed(() => {
   switch (props.job.status) {
-    case 'uploading': return `Hochladen... ${props.job.progress}%`;
-    case 'uploaded': return 'Bereit zur Konvertierung';
-    case 'pending': return 'Warten...';
-    case 'processing': return `Konvertierung... ${props.job.progress}%`;
-    case 'completed': return 'Fertig';
-    case 'error': return 'Fehler';
+    case 'uploading': return `${t('statusUploading')} ${props.job.progress}%`;
+    case 'uploaded': return t('statusUploaded');
+    case 'pending': return t('statusPending');
+    case 'processing': return `${t('statusProcessing')} ${props.job.progress}%`;
+    case 'completed': return t('statusCompleted');
+    case 'error': return t('statusError');
     default: return '';
   }
 });
@@ -112,7 +114,7 @@ function handleRemove() {
     <!-- Format-Auswahl für hochgeladene Dateien -->
     <div v-if="job.status === 'uploaded'" class="format-selection">
       <div class="selector-row">
-        <label>Format:</label>
+        <label>{{ t('formatLabel') }}</label>
         <div class="format-buttons">
           <button
             v-for="format in formats"
@@ -126,7 +128,7 @@ function handleRemove() {
       </div>
 
       <div class="selector-row">
-        <label>Qualität:</label>
+        <label>{{ t('qualityLabel') }}</label>
         <div class="format-buttons">
           <button
             v-for="quality in qualities"
@@ -155,7 +157,7 @@ function handleRemove() {
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        {{ isConverting ? 'Wird gestartet...' : 'Konvertieren' }}
+        {{ isConverting ? t('startingConversion') : t('convert') }}
       </button>
 
       <button
@@ -166,7 +168,7 @@ function handleRemove() {
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        Herunterladen
+        {{ t('download') }}
       </button>
 
       <button
@@ -176,7 +178,7 @@ function handleRemove() {
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        Entfernen
+        {{ t('remove') }}
       </button>
     </div>
   </div>

@@ -27,6 +27,56 @@ const translations = {
     language: 'Sprache',
     german: 'Deutsch',
     english: 'English',
+
+    // Converter Page
+    connected: 'Verbunden',
+    disconnected: 'Getrennt',
+    footerText: 'Serverbasierte Videokonvertierung mit FFmpeg · Max. Dateigröße: 5 GB',
+
+    // File Uploader
+    notVideoFile: 'Keine Videodatei',
+    uploadFailed: 'Hochladen fehlgeschlagen',
+    uploadingText: 'Wird hochgeladen...',
+    dropFilesHere: 'Videodateien hier ablegen',
+    orClickToBrowse: 'oder klicken zum Durchsuchen',
+    supportedFormats: 'Unterstützt: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS (Max: 5 GB)',
+
+    // Conversion Status
+    statusUploading: 'Hochladen...',
+    statusUploaded: 'Bereit zur Konvertierung',
+    statusPending: 'Warten...',
+    statusProcessing: 'Konvertierung...',
+    statusCompleted: 'Fertig',
+    statusError: 'Fehler',
+
+    // Conversion Item Labels
+    formatLabel: 'Format:',
+    qualityLabel: 'Qualität:',
+    startingConversion: 'Wird gestartet...',
+    convert: 'Konvertieren',
+    download: 'Herunterladen',
+    remove: 'Entfernen',
+
+    // Quality Levels
+    qualityLow: 'Niedrig',
+    qualityMedium: 'Mittel',
+    qualityHigh: 'Hoch',
+    qualityUltra: 'Ultra',
+
+    // Conversion Queue
+    conversionQueue: 'Konvertierungswarteschlange',
+
+    // Format Selector
+    outputFormat: 'Ausgabeformat',
+    quality: 'Qualität',
+
+    // Store Errors
+    fileTooLarge: 'Datei zu groß. Max: 5 GB',
+    uploadFailedError: 'Upload fehlgeschlagen',
+    uploadError: 'Upload-Fehler',
+    uploadAborted: 'Upload abgebrochen',
+    jobNotFound: 'Job nicht gefunden oder nicht bereit',
+    conversionFailed: 'Konvertierung fehlgeschlagen',
   },
   en: {
     // Hero Section
@@ -52,6 +102,56 @@ const translations = {
     language: 'Language',
     german: 'German',
     english: 'English',
+
+    // Converter Page
+    connected: 'Connected',
+    disconnected: 'Disconnected',
+    footerText: 'Server-based video conversion with FFmpeg · Max. file size: 5 GB',
+
+    // File Uploader
+    notVideoFile: 'Not a video file',
+    uploadFailed: 'Upload failed',
+    uploadingText: 'Uploading...',
+    dropFilesHere: 'Drop video files here',
+    orClickToBrowse: 'or click to browse',
+    supportedFormats: 'Supported: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS (Max: 5 GB)',
+
+    // Conversion Status
+    statusUploading: 'Uploading...',
+    statusUploaded: 'Ready to convert',
+    statusPending: 'Waiting...',
+    statusProcessing: 'Converting...',
+    statusCompleted: 'Completed',
+    statusError: 'Error',
+
+    // Conversion Item Labels
+    formatLabel: 'Format:',
+    qualityLabel: 'Quality:',
+    startingConversion: 'Starting...',
+    convert: 'Convert',
+    download: 'Download',
+    remove: 'Remove',
+
+    // Quality Levels
+    qualityLow: 'Low',
+    qualityMedium: 'Medium',
+    qualityHigh: 'High',
+    qualityUltra: 'Ultra',
+
+    // Conversion Queue
+    conversionQueue: 'Conversion Queue',
+
+    // Format Selector
+    outputFormat: 'Output Format',
+    quality: 'Quality',
+
+    // Store Errors
+    fileTooLarge: 'File too large. Max: 5 GB',
+    uploadFailedError: 'Upload failed',
+    uploadError: 'Upload error',
+    uploadAborted: 'Upload aborted',
+    jobNotFound: 'Job not found or not ready',
+    conversionFailed: 'Conversion failed',
   }
 };
 

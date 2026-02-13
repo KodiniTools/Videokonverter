@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useConversionStore } from '@/stores/conversion';
+import { useI18n } from '@/composables/useI18n';
 import type { VideoFormat, VideoQuality } from '@/types/conversion';
 
 const conversionStore = useConversionStore();
+const { t } = useI18n();
 
 const formats: { value: VideoFormat; label: string }[] = [
   { value: 'mp4', label: 'MP4 (H.264)' },
@@ -13,12 +16,12 @@ const formats: { value: VideoFormat; label: string }[] = [
   { value: 'ts', label: 'TS (MPEG-TS)' }
 ];
 
-const qualities: { value: VideoQuality; label: string; bitrate: string }[] = [
-  { value: 'low', label: 'Niedrig', bitrate: '~500 kbps' },
-  { value: 'medium', label: 'Mittel', bitrate: '~1 Mbps' },
-  { value: 'high', label: 'Hoch', bitrate: '~2,5 Mbps' },
-  { value: 'ultra', label: 'Ultra', bitrate: '~5 Mbps' }
-];
+const qualities = computed(() => [
+  { value: 'low' as VideoQuality, label: t('qualityLow'), bitrate: '~500 kbps' },
+  { value: 'medium' as VideoQuality, label: t('qualityMedium'), bitrate: '~1 Mbps' },
+  { value: 'high' as VideoQuality, label: t('qualityHigh'), bitrate: '~2,5 Mbps' },
+  { value: 'ultra' as VideoQuality, label: t('qualityUltra'), bitrate: '~5 Mbps' }
+]);
 
 function updateFormat(format: VideoFormat) {
   conversionStore.setSettings({ targetFormat: format });
@@ -32,7 +35,7 @@ function updateQuality(quality: VideoQuality) {
 <template>
   <div class="format-selector">
     <div class="selector-group">
-      <label>Ausgabeformat</label>
+      <label>{{ t('outputFormat') }}</label>
       <div class="button-group">
         <button
           v-for="format in formats"
@@ -46,7 +49,7 @@ function updateQuality(quality: VideoQuality) {
     </div>
 
     <div class="selector-group">
-      <label>Qualität</label>
+      <label>{{ t('quality') }}</label>
       <div class="button-group">
         <button
           v-for="quality in qualities"

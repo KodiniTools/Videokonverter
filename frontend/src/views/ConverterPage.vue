@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useConversionStore } from '@/stores/conversion';
 import { useWebSocket } from '@/composables/useWebSocket';
+import { useI18n } from '@/composables/useI18n';
 import FileUploader from '@/components/FileUploader.vue';
 import ConversionQueue from '@/components/ConversionQueue.vue';
 
 const conversionStore = useConversionStore();
+const { t } = useI18n();
 
 // WebSocket für Progress Updates
 const { connected } = useWebSocket((update) => {
@@ -17,14 +19,14 @@ const { connected } = useWebSocket((update) => {
     <main class="main">
       <div class="connection-status" :class="{ connected }">
         <span class="status-dot"></span>
-        {{ connected ? 'Verbunden' : 'Getrennt' }}
+        {{ connected ? t('connected') : t('disconnected') }}
       </div>
       <FileUploader />
       <ConversionQueue />
     </main>
 
     <footer class="footer">
-      <p>Serverbasierte Videokonvertierung mit FFmpeg · Max. Dateigröße: 5 GB</p>
+      <p>{{ t('footerText') }}</p>
     </footer>
   </div>
 </template>

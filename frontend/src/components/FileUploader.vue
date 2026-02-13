@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useConversionStore } from '@/stores/conversion';
+import { useI18n } from '@/composables/useI18n';
 
 const conversionStore = useConversionStore();
+const { t } = useI18n();
 const isDragging = ref(false);
 const fileInput = ref<HTMLInputElement | null>(null);
 const uploading = ref(false);
@@ -50,14 +52,14 @@ async function processFiles(files: File[]) {
 
   for (const file of files) {
     if (!isVideoFile(file)) {
-      error.value = `${file.name}: Keine Videodatei`;
+      error.value = `${file.name}: ${t('notVideoFile')}`;
       continue;
     }
 
     try {
       await conversionStore.uploadFile(file);
     } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Hochladen fehlgeschlagen';
+      error.value = err instanceof Error ? err.message : t('uploadFailed');
     }
   }
 
@@ -92,9 +94,9 @@ function triggerFileInput() {
           </svg>
         </div>
 
-        <h3>{{ uploading ? 'Wird hochgeladen...' : 'Videodateien hier ablegen' }}</h3>
-        <p>oder klicken zum Durchsuchen</p>
-        <p class="formats">Unterstützt: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS (Max: 5 GB)</p>
+        <h3>{{ uploading ? t('uploadingText') : t('dropFilesHere') }}</h3>
+        <p>{{ t('orClickToBrowse') }}</p>
+        <p class="formats">{{ t('supportedFormats') }}</p>
       </div>
 
       <input
