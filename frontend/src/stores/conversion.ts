@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { ConversionJob, ConversionSettings, ProgressUpdate, VideoFormat, VideoQuality } from '@/types/conversion';
+import { useI18n } from '@/composables/useI18n';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB
 
 export const useConversionStore = defineStore('conversion', () => {
+  const { t } = useI18n();
   const jobs = ref<ConversionJob[]>([]);
   const settings = ref<ConversionSettings>({
     targetFormat: 'mp4',
@@ -27,7 +29,7 @@ export const useConversionStore = defineStore('conversion', () => {
   // Nur Upload - ohne Konvertierung
   async function uploadFile(file: File): Promise<string> {
     if (file.size > MAX_FILE_SIZE) {
-      throw new Error(`Datei zu groß. Max: ${MAX_FILE_SIZE / 1024 / 1024 / 1024}GB`);
+      throw new Error(t('fileTooLarge'));
     }
 
     const jobId = crypto.randomUUID();
@@ -72,12 +74,12 @@ export const useConversionStore = defineStore('conversion', () => {
             });
             resolve();
           } else {
-            reject(new Error(`Upload fehlgeschlagen: ${xhr.status}`));
+            reject(new Error(`${t('uploadFailedError')}: ${xhr.status}`));
           }
         });
 
-        xhr.addEventListener('error', () => reject(new Error('Upload-Fehler')));
-        xhr.addEventListener('abort', () => reject(new Error('Upload abgebrochen')));
+        xhr.addEventListener('error', () => reject(new Error(t('uploadError'))));
+        xhr.addEventListener('abort', () => reject(new Error(t('uploadAborted'))));
 
         xhr.open('POST', `${API_URL}/api/upload`);
         xhr.send(formData);
@@ -87,7 +89,7 @@ export const useConversionStore = defineStore('conversion', () => {
     } catch (error) {
       updateJob(jobId, {
         status: 'error',
-        error: error instanceof Error ? error.message : 'Upload fehlgeschlagen'
+        error: error instanceof Error ? error.message : t('uploadFailedError')
       });
       throw error;
     }
@@ -97,7 +99,7 @@ export const useConversionStore = defineStore('conversion', () => {
   async function startConversion(jobId: string, targetFormat: VideoFormat, quality: VideoQuality): Promise<void> {
     const job = jobs.value.find(j => j.id === jobId);
     if (!job || job.status !== 'uploaded') {
-      throw new Error('Job nicht gefunden oder nicht bereit');
+      throw new Error(t('jobNotFound'));
     }
 
     // Job aktualisieren mit gewähltem Format
@@ -118,14 +120,14 @@ export const useConversionStore = defineStore('conversion', () => {
       });
 
       if (!response.ok) {
-        throw new Error(`Konvertierung fehlgeschlagen: ${response.status}`);
+        throw new Error(`${t('conversionFailed')}: ${response.status}`);
       }
 
       updateJob(jobId, { status: 'processing' });
     } catch (error) {
       updateJob(jobId, {
         status: 'error',
-        error: error instanceof Error ? error.message : 'Konvertierung fehlgeschlagen'
+        error: error instanceof Error ? error.message : t('conversionFailed')
       });
       throw error;
     }
