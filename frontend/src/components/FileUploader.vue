@@ -213,4 +213,61 @@ p {
   color: var(--color-error);
   font-size: 14px;
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .drop-zone {
+    padding: 40px 16px;
+  }
+
+  .upload-button {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+  }
+
+  .upload-icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .drop-zone {
+    padding: 32px 12px;
+    border-width: 2px;
+  }
+
+  .upload-button {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 12px;
+  }
+
+  .upload-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  h3 {
+    font-size: 16px;
+  }
+
+  p {
+    font-size: 14px;
+  }
+
+  .formats {
+    font-size: 11px;
+  }
+
+  .error-message {
+    font-size: 13px;
+    padding: 10px;
+  }
+}
 </style>

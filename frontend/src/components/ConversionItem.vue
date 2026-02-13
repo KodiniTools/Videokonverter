@@ -380,4 +380,73 @@ button:disabled {
 .btn-remove:hover {
   background: var(--color-border-light);
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .item-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .status {
+    font-size: 13px;
+  }
+
+  .item-actions {
+    flex-wrap: wrap;
+  }
+
+  .item-actions button {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    padding: 10px 12px;
+  }
+
+  .format-buttons button {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .conversion-item {
+    padding: 12px;
+  }
+
+  .file-name {
+    font-size: 14px;
+  }
+
+  .file-meta {
+    font-size: 12px;
+  }
+
+  .item-actions {
+    flex-direction: column;
+  }
+
+  .item-actions button {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .format-selection {
+    padding: 10px;
+  }
+
+  .format-buttons {
+    gap: 4px;
+  }
+
+  .format-buttons button {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .error-text {
+    font-size: 12px;
+  }
+}
 </style>

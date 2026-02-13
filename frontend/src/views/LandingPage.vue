@@ -233,15 +233,88 @@ const { t } = useI18n();
 /* Responsive */
 @media (max-width: 768px) {
   .hero {
-    padding: 48px 24px;
+    padding: 48px 20px;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+
+  .hero-cta {
+    padding: 14px 28px;
+    font-size: 15px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero-formats {
+    gap: 6px;
+    margin-bottom: 24px;
   }
 
   .features {
-    padding: 48px 24px;
+    padding: 48px 20px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   .feature-card {
     padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 32px 16px;
+  }
+
+  .hero-badge {
+    font-size: 11px;
+    padding: 5px 12px;
+    margin-bottom: 16px;
+  }
+
+  .hero-subtitle {
+    font-size: 15px;
+  }
+
+  .hero-formats {
+    gap: 5px;
+  }
+
+  .format-tag {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  .features {
+    padding: 32px 16px;
+  }
+
+  .feature-card {
+    padding: 20px;
+  }
+
+  .feature-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .feature-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .feature-title {
+    font-size: 18px;
+  }
+
+  .feature-description {
+    font-size: 14px;
   }
 }
 </style>
