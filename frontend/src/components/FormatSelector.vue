@@ -124,4 +124,44 @@ button.active {
   font-size: 11px;
   opacity: 0.8;
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .format-selector {
+    margin-bottom: 24px;
+  }
+
+  .selector-group {
+    margin-bottom: 20px;
+  }
+
+  button {
+    min-width: 80px;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .button-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  button {
+    min-width: 0;
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+
+  .quality-bitrate {
+    font-size: 10px;
+  }
+
+  label {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+}
 </style>

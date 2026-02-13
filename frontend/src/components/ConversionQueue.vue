@@ -32,4 +32,22 @@ h2 {
   color: var(--color-text);
   margin-bottom: 16px;
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .conversion-queue {
+    margin-top: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .conversion-queue {
+    margin-top: 20px;
+  }
+
+  h2 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+}
 </style>
