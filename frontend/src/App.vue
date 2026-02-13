@@ -10,6 +10,14 @@ useThemeStore();
 </template>
 
 <style>
+@font-face {
+  font-family: 'Supreme';
+  src: url('/fonts/Supreme-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* Light Theme Colors
      Based on: #c9984d (gold), #014f99 (blue), #003971 (navy),
@@ -64,7 +72,7 @@ useThemeStore();
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: 'Supreme', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   background: linear-gradient(180deg, #ffffff 0%, var(--color-background) 100%);
   min-height: 100vh;
   color: var(--color-text);
