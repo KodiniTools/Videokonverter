@@ -176,7 +176,7 @@ function triggerFileInput() {
 .upload-icon {
   width: 36px;
   height: 36px;
-  color: var(--color-text);
+  color: var(--color-text-on-primary);
 }
 
 .upload-icon.spinning {
