@@ -29,6 +29,7 @@ const translations = {
     english: 'English',
 
     // Converter Page
+    backToHome: 'Zur Startseite',
     connected: 'Verbunden',
     disconnected: 'Getrennt',
 
@@ -103,6 +104,7 @@ const translations = {
     english: 'English',
 
     // Converter Page
+    backToHome: 'Back to Home',
     connected: 'Connected',
     disconnected: 'Disconnected',
 

@@ -2,6 +2,7 @@
 import { useConversionStore } from '@/stores/conversion';
 import { useWebSocket } from '@/composables/useWebSocket';
 import { useI18n } from '@/composables/useI18n';
+import { RouterLink } from 'vue-router';
 import FileUploader from '@/components/FileUploader.vue';
 import ConversionQueue from '@/components/ConversionQueue.vue';
 
@@ -17,6 +18,12 @@ const { connected } = useWebSocket((update) => {
 <template>
   <div class="converter-page">
     <main class="main">
+      <RouterLink to="/" class="home-link" :title="t('backToHome')">
+        <svg class="home-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        <span class="home-link-text">{{ t('backToHome') }}</span>
+      </RouterLink>
       <div class="connection-status" :class="{ connected }">
         <span class="status-dot"></span>
         {{ connected ? t('connected') : t('disconnected') }}
@@ -32,6 +39,40 @@ const { connected } = useWebSocket((update) => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.home-link:hover {
+  color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.home-arrow {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.home-link:hover .home-arrow {
+  transform: translateX(-3px);
+}
+
+.home-link-text {
+  line-height: 1;
 }
 
 .connection-status {
