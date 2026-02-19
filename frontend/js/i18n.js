@@ -43,7 +43,13 @@
       uploadError: 'Upload-Fehler',
       uploadAborted: 'Upload abgebrochen',
       jobNotFound: 'Job nicht gefunden oder nicht bereit',
-      conversionFailed: 'Konvertierung fehlgeschlagen'
+      conversionFailed: 'Konvertierung fehlgeschlagen',
+
+      // SEO Meta
+      metaTitle: 'Kostenloser Video Converter Online \u2013 MP4, WebM, AVI, MOV, MKV konvertieren',
+      metaDescription: 'Videos kostenlos online konvertieren: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS. Bis zu 5 GB, direkt im Browser, ohne Installation. Schnell, sicher und datenschutzfreundlich.',
+      metaTitleConverter: 'Video konvertieren \u2013 Kostenloser Online Video Converter',
+      metaDescriptionConverter: 'Video jetzt konvertieren: Datei hochladen, Format und Qualit\u00e4t w\u00e4hlen, fertig. MP4, WebM, AVI, MOV, MKV, TS. Bis zu 5 GB, kostenlos und ohne Anmeldung.'
     },
     en: {
       heroTitle: 'Video Converter',
@@ -86,7 +92,13 @@
       uploadError: 'Upload error',
       uploadAborted: 'Upload aborted',
       jobNotFound: 'Job not found or not ready',
-      conversionFailed: 'Conversion failed'
+      conversionFailed: 'Conversion failed',
+
+      // SEO Meta
+      metaTitle: 'Free Online Video Converter \u2013 Convert MP4, WebM, AVI, MOV, MKV',
+      metaDescription: 'Convert videos for free online: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS. Up to 5 GB, directly in your browser, no installation required. Fast, secure and privacy-friendly.',
+      metaTitleConverter: 'Convert Video \u2013 Free Online Video Converter',
+      metaDescriptionConverter: 'Convert your video now: upload file, choose format and quality, done. MP4, WebM, AVI, MOV, MKV, TS. Up to 5 GB, free and no registration.'
     }
   };
 
@@ -111,6 +123,29 @@
       titleElements[j].setAttribute('title', t(titleKey));
     }
     document.documentElement.lang = currentLocale;
+
+    // Update <title> and <meta> tags for SEO i18n sync
+    var isConverterPage = location.pathname.indexOf('converter') !== -1;
+    document.title = t(isConverterPage ? 'metaTitleConverter' : 'metaTitle');
+
+    var descMeta = document.querySelector('meta[name="description"]');
+    if (descMeta) {
+      descMeta.setAttribute('content', t(isConverterPage ? 'metaDescriptionConverter' : 'metaDescription'));
+    }
+
+    // Update Open Graph tags if present
+    var ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) ogTitle.setAttribute('content', t('metaTitle'));
+    var ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) ogDesc.setAttribute('content', t('metaDescription'));
+    var ogLocale = document.querySelector('meta[property="og:locale"]');
+    if (ogLocale) ogLocale.setAttribute('content', currentLocale === 'de' ? 'de_DE' : 'en_US');
+
+    // Update Twitter tags if present
+    var twTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twTitle) twTitle.setAttribute('content', t('metaTitle'));
+    var twDesc = document.querySelector('meta[name="twitter:description"]');
+    if (twDesc) twDesc.setAttribute('content', t('metaDescription'));
   }
 
   function setLocale(lang) {
