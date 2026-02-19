@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Converter</title>
+    <link rel="stylesheet" href="/fontawesome/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="/fontawesome/css/solid.min.css" />
+    <link rel="stylesheet" href="/videokonverter/css/app.css" />
+  </head>
+  <body>
+    <!--#include virtual="/partials/nav.html" -->
+
+    <div class="converter-page">
+      <main class="main">
+        <a href="/videokonverter/" class="home-link" data-i18n-title="backToHome">
+          <svg class="home-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span class="home-link-text" data-i18n="backToHome">Zur Startseite</span>
+        </a>
+
+        <div id="connection-status" class="connection-status">
+          <span class="status-dot"></span>
+          <span id="connection-text" data-i18n="disconnected">Getrennt</span>
+        </div>
+
+        <!-- File Uploader -->
+        <div class="uploader-container">
+          <div id="drop-zone" class="drop-zone">
+            <div class="drop-zone-content">
+              <div id="upload-button" class="upload-button">
+                <svg id="upload-icon-default" class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <svg id="upload-icon-spinner" class="upload-icon spinning" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="display:none">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 id="drop-zone-title" data-i18n="dropFilesHere">Videodateien hier ablegen</h3>
+              <p data-i18n="orClickToBrowse">oder klicken zum Durchsuchen</p>
+              <p class="formats" data-i18n="supportedFormats">Unterstützt: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS (Max: 5 GB)</p>
+            </div>
+            <input id="file-input" type="file" accept=".mp4,.webm,.avi,.mov,.mkv,.flv,.wmv,.ts" multiple style="display:none" />
+          </div>
+          <div id="upload-error" class="error-message" style="display:none"></div>
+        </div>
+
+        <!-- Conversion Queue -->
+        <div id="conversion-queue" class="conversion-queue" style="display:none">
+          <h2 data-i18n="conversionQueue">Konvertierungswarteschlange</h2>
+          <div id="queue-list" class="queue-list"></div>
+        </div>
+      </main>
+    </div>
+
+    <!--#include virtual="/partials/footer.html" -->
+    <!--#include virtual="/partials/cookie-banner.html" -->
+    <script src="/videokonverter/js/theme.js"></script>
+    <script src="/videokonverter/js/i18n.js"></script>
+    <script src="/videokonverter/js/converter.js"></script>
+  </body>
+</html>
