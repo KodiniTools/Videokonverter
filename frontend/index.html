@@ -1,17 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Converter</title>
     <link rel="stylesheet" href="/fontawesome/css/fontawesome.min.css" />
     <link rel="stylesheet" href="/fontawesome/css/solid.min.css" />
+    <link rel="stylesheet" href="/videokonverter/css/app.css" />
   </head>
   <body>
     <!--#include virtual="/partials/nav.html" -->
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+
+    <div class="landing">
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-content">
+          <h1 class="hero-title" data-i18n="heroTitle">Video Converter</h1>
+          <p class="hero-subtitle" data-i18n="heroSubtitle">Konvertieren Sie Ihre Videos schnell und einfach in verschiedene Formate - direkt im Browser, kostenlos und ohne Installation.</p>
+          <div class="hero-formats">
+            <span class="format-tag">MP4</span>
+            <span class="format-tag">WebM</span>
+            <span class="format-tag">AVI</span>
+            <span class="format-tag">MOV</span>
+            <span class="format-tag">MKV</span>
+            <span class="format-tag">FLV</span>
+            <span class="format-tag">WMV</span>
+            <span class="format-tag">TS</span>
+          </div>
+          <a href="/videokonverter/converter.html" class="hero-cta">
+            <span data-i18n="heroCta">Jetzt starten</span>
+            <svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </section>
+
+      <!-- Features Grid -->
+      <section class="features">
+        <div class="features-grid">
+          <article class="feature-card">
+            <h3 class="feature-title" data-i18n="feature1Title">Blitzschnelle Konvertierung</h3>
+            <p class="feature-description" data-i18n="feature1Description">Unsere serverbasierte FFmpeg-Technologie konvertiert Videos in Rekordzeit. Unterstützt Dateien bis zu 5 GB mit Echtzeit-Fortschrittsanzeige.</p>
+          </article>
+
+          <article class="feature-card">
+            <h3 class="feature-title" data-i18n="feature2Title">Vielfältige Formate</h3>
+            <p class="feature-description" data-i18n="feature2Description">Konvertieren Sie zwischen allen gängigen Formaten: MP4, WebM, AVI, MOV, MKV, FLV, WMV und TS. Vier Qualitätsstufen zur Auswahl.</p>
+          </article>
+
+          <article class="feature-card">
+            <h3 class="feature-title" data-i18n="feature3Title">Einfach &amp; Sicher</h3>
+            <p class="feature-description" data-i18n="feature3Description">Drag &amp; Drop-Upload, intuitive Bedienung und automatische Löschung nach 2 Stunden. Keine Anmeldung erforderlich.</p>
+          </article>
+        </div>
+      </section>
+    </div>
+
     <!--#include virtual="/partials/footer.html" -->
     <!--#include virtual="/partials/cookie-banner.html" -->
+    <script src="/videokonverter/js/theme.js"></script>
+    <script src="/videokonverter/js/i18n.js"></script>
   </body>
 </html>
