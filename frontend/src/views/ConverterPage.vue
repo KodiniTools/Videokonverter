@@ -19,14 +19,10 @@ const { connected } = useWebSocket((update) => {
   <div class="converter-page">
     <main class="main">
       <RouterLink to="/" class="home-link" :title="t('backToHome')">
-        <svg class="home-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-          <polyline points="9 22 9 12 15 12 15 22"/>
-        </svg>
-        <span class="home-link-text">{{ t('backToHome') }}</span>
         <svg class="home-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M19 12H5M12 19l-7-7 7-7"/>
         </svg>
+        <span class="home-link-text">{{ t('backToHome') }}</span>
       </RouterLink>
       <div class="connection-status" :class="{ connected }">
         <span class="status-dot"></span>
@@ -62,12 +58,6 @@ const { connected } = useWebSocket((update) => {
 .home-link:hover {
   color: var(--color-primary);
   background: var(--color-surface);
-}
-
-.home-icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
 }
 
 .home-arrow {
