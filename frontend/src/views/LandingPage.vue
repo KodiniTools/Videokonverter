@@ -10,7 +10,6 @@ const { t } = useI18n();
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-content">
-        <div class="hero-badge">FFmpeg Powered</div>
         <h1 class="hero-title">{{ t('heroTitle') }}</h1>
         <p class="hero-subtitle">{{ t('heroSubtitle') }}</p>
         <div class="hero-formats">
@@ -37,33 +36,18 @@ const { t } = useI18n();
       <div class="features-grid">
         <!-- Feature Card 1 -->
         <article class="feature-card">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
           <h3 class="feature-title">{{ t('feature1Title') }}</h3>
           <p class="feature-description">{{ t('feature1Description') }}</p>
         </article>
 
         <!-- Feature Card 2 -->
         <article class="feature-card">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
           <h3 class="feature-title">{{ t('feature2Title') }}</h3>
           <p class="feature-description">{{ t('feature2Description') }}</p>
         </article>
 
         <!-- Feature Card 3 -->
         <article class="feature-card">
-          <div class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
           <h3 class="feature-title">{{ t('feature3Title') }}</h3>
           <p class="feature-description">{{ t('feature3Description') }}</p>
         </article>
@@ -91,19 +75,6 @@ const { t } = useI18n();
 .hero-content {
   max-width: 700px;
   text-align: center;
-}
-
-.hero-badge {
-  display: inline-block;
-  padding: 6px 14px;
-  background: var(--color-secondary);
-  color: #003971;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 20px;
-  margin-bottom: 24px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .hero-title {
@@ -202,22 +173,6 @@ const { t } = useI18n();
   border-color: var(--color-primary);
 }
 
-.feature-icon {
-  width: 56px;
-  height: 56px;
-  background: var(--color-primary);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.feature-icon svg {
-  width: 28px;
-  height: 28px;
-  color: var(--color-text-on-primary);
-}
-
 .feature-title {
   font-size: 20px;
   font-weight: 700;
@@ -272,12 +227,6 @@ const { t } = useI18n();
     padding: 32px 16px;
   }
 
-  .hero-badge {
-    font-size: 11px;
-    padding: 5px 12px;
-    margin-bottom: 16px;
-  }
-
   .hero-subtitle {
     font-size: 15px;
   }
@@ -297,16 +246,6 @@ const { t } = useI18n();
 
   .feature-card {
     padding: 20px;
-  }
-
-  .feature-icon {
-    width: 48px;
-    height: 48px;
-  }
-
-  .feature-icon svg {
-    width: 24px;
-    height: 24px;
   }
 
   .feature-title {
