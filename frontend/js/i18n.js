@@ -157,8 +157,8 @@
   }
 
   // Listen for language changes from the SSI global navigation
-  window.addEventListener('language-changed', function (e) {
-    var lang = e.detail && e.detail.lang;
+  window.addEventListener('locale-changed', function (e) {
+    var lang = e.detail && e.detail.locale;
     setLocale(lang);
   });
 
