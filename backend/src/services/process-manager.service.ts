@@ -261,6 +261,7 @@ export class ProcessManagerService {
 
     for (const dir of directories) {
       try {
+        await fs.mkdir(dir, { recursive: true });
         const files = await fs.readdir(dir);
 
         for (const file of files) {

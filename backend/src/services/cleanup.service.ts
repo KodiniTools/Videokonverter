@@ -24,6 +24,7 @@ export class CleanupService {
 
     for (const dir of dirs) {
       try {
+        await fs.mkdir(dir, { recursive: true });
         const files = await fs.readdir(dir);
 
         for (const file of files) {
