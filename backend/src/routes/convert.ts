@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import path from 'path';
 import fs from 'fs/promises';
-import { upload } from '../middleware/upload.middleware.js';
+import { upload, sanitizeFilename } from '../middleware/upload.middleware.js';
+import { uploadRateLimit, convertRateLimit, downloadRateLimit } from '../middleware/rate-limit.middleware.js';
 import { FFmpegService } from '../services/ffmpeg.service.js';
 import { DiskSpaceService } from '../services/disk-space.service.js';
+import { config } from '../config.js';
 import type { VideoFormat, VideoQuality } from '../types/conversion.js';
 
 const router = Router();
@@ -18,13 +20,12 @@ const uploadedFiles = new Map<string, { inputPath: string; originalName: string;
 
 // Conversion Jobs Map (nach Start der Konvertierung)
 const jobs = new Map<string, { outputPath: string; format: string; originalName: string }>();
-const MAX_JOBS_IN_MEMORY = 1000;
 
 /**
  * Helper function to add uploaded files with size limit
  */
 function addUploadedFile(jobId: string, fileData: { inputPath: string; originalName: string; fileSize: number }) {
-  if (uploadedFiles.size >= MAX_JOBS_IN_MEMORY) {
+  if (uploadedFiles.size >= config.jobs.maxUploadedFiles) {
     const firstKey = uploadedFiles.keys().next().value;
     if (firstKey) {
       uploadedFiles.delete(firstKey);
@@ -38,18 +39,18 @@ function addUploadedFile(jobId: string, fileData: { inputPath: string; originalN
  * Helper function to add jobs with size limit
  */
 function addJob(jobId: string, jobData: { outputPath: string; format: string; originalName: string }) {
-  if (jobs.size >= MAX_JOBS_IN_MEMORY) {
+  if (jobs.size >= config.jobs.maxJobs) {
     const firstKey = jobs.keys().next().value;
     if (firstKey) {
       jobs.delete(firstKey);
-      console.log(`[Jobs] ⚠️  Map limit reached (${MAX_JOBS_IN_MEMORY}), removed oldest: ${firstKey}`);
+      console.log(`[Jobs] ⚠️  Map limit reached (${config.jobs.maxJobs}), removed oldest: ${firstKey}`);
     }
   }
   jobs.set(jobId, jobData);
 }
 
 // Upload-Endpunkt: Nur Datei hochladen, noch nicht konvertieren
-router.post('/upload', upload.single('video'), async (req, res) => {
+router.post('/upload', uploadRateLimit, upload.single('video'), async (req, res) => {
   try {
     // Performance-Optimierung: Timeouts sofort deaktivieren für große Uploads
     req.setTimeout(0);
@@ -109,7 +110,7 @@ router.post('/upload', upload.single('video'), async (req, res) => {
 });
 
 // Konvertierung starten für bereits hochgeladene Datei
-router.post('/convert/:jobId', async (req, res) => {
+router.post('/convert/:jobId', convertRateLimit, async (req, res) => {
   try {
     const { jobId } = req.params;
     const { targetFormat, quality } = req.body as {
@@ -128,7 +129,7 @@ router.post('/convert/:jobId', async (req, res) => {
     }
 
     const outputFilename = `output-${jobId}.${targetFormat}`;
-    const outputPath = path.join('outputs', outputFilename);
+    const outputPath = path.join(config.upload.outputDir, outputFilename);
 
     // Job-Info speichern
     addJob(jobId, { outputPath, format: targetFormat, originalName: uploadedFile.originalName });
@@ -156,7 +157,7 @@ router.post('/convert/:jobId', async (req, res) => {
   }
 });
 
-router.get('/download/:jobId', (req, res) => {
+router.get('/download/:jobId', downloadRateLimit, (req, res) => {
   const { jobId } = req.params;
   const job = jobs.get(jobId);
 
@@ -164,10 +165,11 @@ router.get('/download/:jobId', (req, res) => {
     return res.status(404).json({ error: 'Job not found' });
   }
 
-  // Originalnamen verwenden: Dateiname ohne alte Endung + neue Endung
-  const baseName = job.originalName.replace(/\.[^.]+$/, '');
-  const filename = `${baseName}.${job.format}`;
-  res.download(job.outputPath, filename, async (err) => {
+  // Sanitize filename to prevent Content-Disposition injection
+  const baseName = sanitizeFilename(job.originalName).replace(/\.[^.]+$/, '');
+  const safeFilename = `${baseName}.${job.format}`;
+
+  res.download(job.outputPath, safeFilename, async (err) => {
     if (err) {
       console.error('[Download] Error:', err);
       // Bei Fehler nicht zurücksenden wenn bereits gesendet

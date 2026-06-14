@@ -1,10 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import http from 'http';
+import helmet from 'helmet';
+import { config } from './config.js';
 import convertRoutes, { ffmpegService } from './routes/convert.js';
 import { initWebSocket } from './websocket.js';
 import { CleanupService } from './services/cleanup.service.js';
 import { DiskSpaceService } from './services/disk-space.service.js';
+import { apiRateLimit } from './middleware/rate-limit.middleware.js';
 
 const app = express();
 
@@ -12,14 +15,12 @@ const app = express();
 const server = http.createServer({
   // Keep-Alive für bessere Connection-Wiederverwendung
   keepAlive: true,
-  keepAliveTimeout: 65000, // 65 Sekunden (länger als Nginx default 60s)
+  keepAliveTimeout: config.server.keepAliveTimeout, // 65 Sekunden (länger als Nginx default 60s)
   // Timeout für Requests erhöhen (für große Uploads)
-  requestTimeout: 0, // Deaktiviert
+  requestTimeout: config.server.requestTimeout, // Deaktiviert
   // Header Timeout
-  headersTimeout: 66000, // Etwas länger als keepAliveTimeout
+  headersTimeout: config.server.headersTimeout, // Etwas länger als keepAliveTimeout
 }, app);
-
-const PORT = process.env.PORT || 3000;
 
 // Performance-Optimierung: Trust Proxy für korrekte Client-IPs hinter Nginx
 app.set('trust proxy', 1);
@@ -27,13 +28,22 @@ app.set('trust proxy', 1);
 // Performance-Optimierung: ETag deaktivieren für große Video-Dateien (spart CPU)
 app.set('etag', false);
 
+// Security: Secure HTTP headers
+app.use(helmet());
+
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: config.cors.allowedOrigins,
+  credentials: true,
+}));
+
+// General rate limiting
+app.use(apiRateLimit);
 
 // Performance-Optimierung: Body Parser nur für JSON/URL-encoded, nicht für Uploads
 // Uploads werden durch Multer als Streams verarbeitet
-app.use(express.json({ limit: '50gb' }));
-app.use(express.urlencoded({ limit: '50gb', extended: true }));
+app.use(express.json({ limit: config.server.bodyLimit }));
+app.use(express.urlencoded({ limit: config.server.bodyLimit, extended: true }));
 
 // Routes
 app.use('/api', convertRoutes);
@@ -57,7 +67,7 @@ setInterval(async () => {
   if (!hasSpace) {
     console.error('[Server] WARNING: Low disk space! Less than 100GB free.');
   }
-}, 5 * 60 * 1000);
+}, config.cleanup.intervalMs);
 
 // Graceful shutdown
 const gracefulShutdown = async (signal: string) => {
@@ -86,15 +96,15 @@ const gracefulShutdown = async (signal: string) => {
   setTimeout(() => {
     console.error('[Server] ⚠️ Graceful shutdown timeout, forcing exit...');
     process.exit(1);
-  }, 30000);
+  }, config.server.gracefulShutdownMs);
 };
 
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 process.on('SIGINT', () => gracefulShutdown('SIGINT')); // Ctrl+C
 
-server.listen(PORT, async () => {
-  console.log(`[Server] Running on http://localhost:${PORT}`);
-  console.log(`[WS] WebSocket available on ws://localhost:${PORT}`);
+server.listen(config.server.port, async () => {
+  console.log(`[Server] Running on http://localhost:${config.server.port}`);
+  console.log(`[WS] WebSocket available on ws://localhost:${config.server.port}`);
 
   // Zombie-Prozesse und alte Dateien beim Start aufräumen
   const processManager = ffmpegService.getProcessManager();
