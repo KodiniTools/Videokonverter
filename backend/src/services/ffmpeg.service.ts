@@ -20,7 +20,7 @@ export class FFmpegService {
     const { jobId, inputPath, outputPath, targetFormat, quality } = options;
     const settings = QUALITY_PRESETS[quality];
 
-    console.log('[FFmpeg] 💻 CPU encoding (quality: ${quality})');
+    console.log(`[FFmpeg] 💻 CPU encoding (quality: ${quality})`);
 
     // CPU conversion with optimizations
     await this.convertWithCPU(options, settings);

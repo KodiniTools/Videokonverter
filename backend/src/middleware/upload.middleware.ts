@@ -1,53 +1,42 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB
-
-// Performance-Optimierung: Größere Buffer für schnellere I/O-Operationen
-// 16MB Chunks statt Standard 64KB für bessere Upload-Geschwindigkeit bei großen Dateien
-const UPLOAD_BUFFER_SIZE = 16 * 1024 * 1024; // 16MB
+import sanitize from 'sanitize-filename';
+import { config } from '../config.js';
 
 const storage = multer.diskStorage({
-  destination: 'uploads/',
-  filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+  destination: config.upload.uploadDir,
+  filename: (_req, file, cb) => {
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     const ext = path.extname(file.originalname);
     cb(null, `upload-${uniqueSuffix}${ext}`);
-  }
+  },
 });
 
-const allowedExtensions = ['.mp4', '.webm', '.avi', '.mov', '.mkv', '.flv', '.wmv', '.ts'];
-
-const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  // Prüfe MIME-Type
+const fileFilter = (
+  _req: Express.Request,
+  file: Express.Multer.File,
+  cb: multer.FileFilterCallback
+) => {
   if (file.mimetype.startsWith('video/')) {
     return cb(null, true);
   }
-  // Fallback: Prüfe Dateiendung (für MOV, MKV etc. die manchmal nicht erkannt werden)
   const ext = path.extname(file.originalname).toLowerCase();
-  if (allowedExtensions.includes(ext)) {
+  if (config.upload.allowedExtensions.includes(ext as (typeof config.upload.allowedExtensions)[number])) {
     return cb(null, true);
   }
   return cb(new Error('Only video files allowed'));
 };
 
-// Performance-Optimierung: Optimierter Storage mit größeren Buffern
-const optimizedStorage = multer.diskStorage({
-  destination: 'uploads/',
-  filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
-    const ext = path.extname(file.originalname);
-    cb(null, `upload-${uniqueSuffix}${ext}`);
-  }
-});
-
-// Original Upload (bleibt unverändert für Kompatibilität)
 export const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: MAX_FILE_SIZE,
-    files: 1
-  }
+    fileSize: config.upload.maxFileSizeBytes,
+    files: 1,
+  },
 });
+
+export function sanitizeFilename(name: string): string {
+  return sanitize(name) || 'video';
+}
