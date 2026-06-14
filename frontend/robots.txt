@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /api/
+Disallow: /videokonverter/api/
+
+Sitemap: https://kodinitools.com/sitemap.xml
