@@ -49,6 +49,37 @@ function addJob(jobId: string, jobData: { outputPath: string; format: string; or
   jobs.set(jobId, jobData);
 }
 
+// GET /api/jobs — return all known jobs for frontend restoration after reload
+router.get('/jobs', (req, res) => {
+  const result: Array<{
+    jobId: string;
+    status: 'uploaded' | 'processing';
+    originalName: string;
+    fileSize?: number;
+    format?: string;
+  }> = [];
+
+  for (const [jobId, file] of uploadedFiles.entries()) {
+    result.push({
+      jobId,
+      status: 'uploaded',
+      originalName: file.originalName,
+      fileSize: file.fileSize,
+    });
+  }
+
+  for (const [jobId, job] of jobs.entries()) {
+    result.push({
+      jobId,
+      status: 'processing',
+      originalName: job.originalName,
+      format: job.format,
+    });
+  }
+
+  res.json({ jobs: result });
+});
+
 // Upload-Endpunkt: Nur Datei hochladen, noch nicht konvertieren
 router.post('/upload', uploadRateLimit, upload.single('video'), async (req, res) => {
   try {
