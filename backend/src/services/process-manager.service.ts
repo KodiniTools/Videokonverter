@@ -213,7 +213,7 @@ export class ProcessManagerService {
           // Alle Zombie-Prozesse killen
           for (const pid of pids) {
             try {
-              await execAsync(`kill -SIGTERM ${pid}`);
+              await execAsync(`kill -15 ${pid}`);
               console.log(`[ProcessManager] 🔪 Killed zombie process: ${pid}`);
             } catch (error) {
               console.error(`[ProcessManager] ❌ Error killing zombie ${pid}:`, error);
@@ -224,7 +224,7 @@ export class ProcessManagerService {
           await new Promise(resolve => setTimeout(resolve, 5000));
           for (const pid of pids) {
             try {
-              await execAsync(`kill -SIGKILL ${pid} 2>/dev/null`);
+              await execAsync(`kill -9 ${pid} 2>/dev/null`);
             } catch {
               // Prozess bereits tot
             }
