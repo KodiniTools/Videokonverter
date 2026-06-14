@@ -327,29 +327,62 @@
       : formatFileSize(job.fileSize);
     var showProgress = job.status === 'uploading' || job.status === 'pending' || job.status === 'processing';
 
-    var html = '';
+    // Clear existing content
+    while (el.firstChild) el.removeChild(el.firstChild);
 
     // Header
-    html += '<div class="item-header">';
-    html += '<div class="file-info">';
-    html += '<div class="file-name">' + escapeHtml(displayName) + '</div>';
-    html += '<div class="file-meta">' + displaySize + '</div>';
-    html += '</div>';
-    html += '<div class="status status-' + job.status + '">' + getStatusText(job) + '</div>';
-    html += '</div>';
+    var header = document.createElement('div');
+    header.className = 'item-header';
+
+    var fileInfo = document.createElement('div');
+    fileInfo.className = 'file-info';
+
+    var fileName = document.createElement('div');
+    fileName.className = 'file-name';
+    fileName.textContent = displayName;
+
+    var fileMeta = document.createElement('div');
+    fileMeta.className = 'file-meta';
+    fileMeta.textContent = displaySize;
+
+    fileInfo.appendChild(fileName);
+    fileInfo.appendChild(fileMeta);
+
+    var statusEl = document.createElement('div');
+    statusEl.className = 'status status-' + job.status;
+    statusEl.textContent = getStatusText(job);
+
+    header.appendChild(fileInfo);
+    header.appendChild(statusEl);
+    el.appendChild(header);
 
     // Progress bar
     if (showProgress) {
-      html += '<div class="progress-bar"><div class="progress-fill" style="width:' + job.progress + '%"></div></div>';
+      var progressBar = document.createElement('div');
+      progressBar.className = 'progress-bar';
+      var progressFill = document.createElement('div');
+      progressFill.className = 'progress-fill';
+      progressFill.style.width = job.progress + '%';
+      progressBar.appendChild(progressFill);
+      el.appendChild(progressBar);
     }
 
     // Format selection (uploaded)
     if (job.status === 'uploaded') {
-      html += '<div class="format-selection">';
+      var formatSelection = document.createElement('div');
+      formatSelection.className = 'format-selection';
 
       // Format row
-      html += '<div class="selector-row"><label>' + t('formatLabel') + '</label>';
-      html += '<div class="format-buttons">';
+      var formatRow = document.createElement('div');
+      formatRow.className = 'selector-row';
+
+      var formatLabel = document.createElement('label');
+      formatLabel.textContent = t('formatLabel');
+      formatRow.appendChild(formatLabel);
+
+      var formatButtons = document.createElement('div');
+      formatButtons.className = 'format-buttons';
+
       var formats = [
         { value: 'mp4', label: 'MP4' },
         { value: 'webm', label: 'WebM' },
@@ -359,14 +392,27 @@
         { value: 'ts', label: 'TS' }
       ];
       for (var f = 0; f < formats.length; f++) {
-        var fActive = job.selectedFormat === formats[f].value ? ' active' : '';
-        html += '<button class="fmt-btn' + fActive + '" data-job="' + job.id + '" data-format="' + formats[f].value + '">' + formats[f].label + '</button>';
+        var fBtn = document.createElement('button');
+        fBtn.className = 'fmt-btn' + (job.selectedFormat === formats[f].value ? ' active' : '');
+        fBtn.dataset.job = job.id;
+        fBtn.dataset.format = formats[f].value;
+        fBtn.textContent = formats[f].label;
+        formatButtons.appendChild(fBtn);
       }
-      html += '</div></div>';
+      formatRow.appendChild(formatButtons);
+      formatSelection.appendChild(formatRow);
 
       // Quality row
-      html += '<div class="selector-row"><label>' + t('qualityLabel') + '</label>';
-      html += '<div class="format-buttons">';
+      var qualityRow = document.createElement('div');
+      qualityRow.className = 'selector-row';
+
+      var qualityLabel = document.createElement('label');
+      qualityLabel.textContent = t('qualityLabel');
+      qualityRow.appendChild(qualityLabel);
+
+      var qualityButtons = document.createElement('div');
+      qualityButtons.className = 'format-buttons';
+
       var qualities = [
         { value: 'low', key: 'qualityLow' },
         { value: 'medium', key: 'qualityMedium' },
@@ -374,44 +420,91 @@
         { value: 'ultra', key: 'qualityUltra' }
       ];
       for (var q = 0; q < qualities.length; q++) {
-        var qActive = job.selectedQuality === qualities[q].value ? ' active' : '';
-        html += '<button class="qual-btn' + qActive + '" data-job="' + job.id + '" data-quality="' + qualities[q].value + '">' + t(qualities[q].key) + '</button>';
+        var qBtn = document.createElement('button');
+        qBtn.className = 'qual-btn' + (job.selectedQuality === qualities[q].value ? ' active' : '');
+        qBtn.dataset.job = job.id;
+        qBtn.dataset.quality = qualities[q].value;
+        qBtn.textContent = t(qualities[q].key);
+        qualityButtons.appendChild(qBtn);
       }
-      html += '</div></div>';
+      qualityRow.appendChild(qualityButtons);
+      formatSelection.appendChild(qualityRow);
 
-      html += '</div>';
+      el.appendChild(formatSelection);
     }
 
     // Error text
     if (job.error) {
-      html += '<div class="error-text">' + escapeHtml(job.error) + '</div>';
+      var errorEl = document.createElement('div');
+      errorEl.className = 'error-text';
+      errorEl.textContent = job.error;
+      el.appendChild(errorEl);
     }
 
     // Action buttons
-    html += '<div class="item-actions">';
+    var actions = document.createElement('div');
+    actions.className = 'item-actions';
 
     if (job.status === 'uploaded') {
-      html += '<button class="btn-convert" data-action="convert" data-job="' + job.id + '">';
-      html += '<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-      html += t('convert');
-      html += '</button>';
+      var convertBtn = document.createElement('button');
+      convertBtn.className = 'btn-convert';
+      convertBtn.dataset.action = 'convert';
+      convertBtn.dataset.job = job.id;
+      var convertSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      convertSvg.setAttribute('class', 'btn-icon');
+      convertSvg.setAttribute('viewBox', '0 0 24 24');
+      convertSvg.setAttribute('fill', 'none');
+      convertSvg.setAttribute('stroke', 'currentColor');
+      var convertPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      convertPath.setAttribute('d', 'M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z');
+      convertPath.setAttribute('stroke-width', '2');
+      convertPath.setAttribute('stroke-linecap', 'round');
+      convertPath.setAttribute('stroke-linejoin', 'round');
+      convertSvg.appendChild(convertPath);
+      convertBtn.appendChild(convertSvg);
+      convertBtn.appendChild(document.createTextNode(t('convert')));
+      actions.appendChild(convertBtn);
     }
 
     if (job.status === 'completed') {
-      html += '<button class="btn-download" data-action="download" data-job="' + job.id + '">';
-      html += '<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-width="2" stroke-linecap="round"/></svg>';
-      html += t('download');
-      html += '</button>';
+      var downloadBtn = document.createElement('button');
+      downloadBtn.className = 'btn-download';
+      downloadBtn.dataset.action = 'download';
+      downloadBtn.dataset.job = job.id;
+      var downloadSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      downloadSvg.setAttribute('class', 'btn-icon');
+      downloadSvg.setAttribute('viewBox', '0 0 24 24');
+      downloadSvg.setAttribute('fill', 'none');
+      downloadSvg.setAttribute('stroke', 'currentColor');
+      var downloadPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      downloadPath.setAttribute('d', 'M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3');
+      downloadPath.setAttribute('stroke-width', '2');
+      downloadPath.setAttribute('stroke-linecap', 'round');
+      downloadSvg.appendChild(downloadPath);
+      downloadBtn.appendChild(downloadSvg);
+      downloadBtn.appendChild(document.createTextNode(t('download')));
+      actions.appendChild(downloadBtn);
     }
 
-    html += '<button class="btn-remove" data-action="remove" data-job="' + job.id + '">';
-    html += '<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round"/></svg>';
-    html += t('remove');
-    html += '</button>';
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'btn-remove';
+    removeBtn.dataset.action = 'remove';
+    removeBtn.dataset.job = job.id;
+    var removeSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    removeSvg.setAttribute('class', 'btn-icon');
+    removeSvg.setAttribute('viewBox', '0 0 24 24');
+    removeSvg.setAttribute('fill', 'none');
+    removeSvg.setAttribute('stroke', 'currentColor');
+    var removePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    removePath.setAttribute('d', 'M18 6L6 18M6 6l12 12');
+    removePath.setAttribute('stroke-width', '2');
+    removePath.setAttribute('stroke-linecap', 'round');
+    removeSvg.appendChild(removePath);
+    removeBtn.appendChild(removeSvg);
+    removeBtn.appendChild(document.createTextNode(t('remove')));
+    actions.appendChild(removeBtn);
 
-    html += '</div>';
-
-    el.innerHTML = html;
+    el.appendChild(actions);
   }
 
   function escapeHtml(str) {
@@ -498,4 +591,38 @@
 
   // ===== Initialize =====
   connectWS();
+
+  async function restoreJobsFromServer() {
+    try {
+      var res = await fetch(API_URL + '/api/jobs');
+      if (!res.ok) return;
+      var data = await res.json();
+      for (var i = 0; i < data.jobs.length; i++) {
+        var serverJob = data.jobs[i];
+        if (findJob(serverJob.jobId)) continue; // already tracked
+        var job = {
+          id: serverJob.jobId,
+          fileName: serverJob.originalName,
+          fileSize: serverJob.fileSize || 0,
+          sourceFormat: serverJob.originalName.split('.').pop() || '',
+          targetFormat: serverJob.format || 'mp4',
+          quality: 'high',
+          status: serverJob.status,
+          progress: serverJob.status === 'processing' ? 50 : 0,
+          error: null,
+          downloadUrl: null,
+          convertedFileSize: null,
+          selectedFormat: serverJob.format || 'mp4',
+          selectedQuality: 'high',
+        };
+        jobs.push(job);
+        renderJob(job);
+      }
+      updateQueueVisibility();
+    } catch (e) {
+      // server not available, ignore
+    }
+  }
+
+  restoreJobsFromServer();
 })();
