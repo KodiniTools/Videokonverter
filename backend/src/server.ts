@@ -63,9 +63,9 @@ cleanupService.start();
 // Disk Space Monitoring
 const diskSpaceService = new DiskSpaceService();
 setInterval(async () => {
-  const hasSpace = await diskSpaceService.checkAvailableSpace(100); // 100GB threshold
+  const hasSpace = await diskSpaceService.checkAvailableSpace(10); // Warn below 20GB free (2x buffer)
   if (!hasSpace) {
-    console.error('[Server] WARNING: Low disk space! Less than 100GB free.');
+    console.error('[Server] WARNING: Low disk space! Less than 20GB free.');
   }
 }, config.cleanup.intervalMs);
 
