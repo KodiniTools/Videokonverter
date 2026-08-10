@@ -10,7 +10,7 @@ set -euo pipefail
 #  (NGINX-Alias fuer die Location /videokonverter/).
 #
 #  Optional wird zusaetzlich das TypeScript-Backend neu gebaut
-#  und der PM2-Prozess (video-converter, Port 9014) neu geladen.
+#  und der PM2-Prozess (videokonverter-server, Port 9014) neu geladen.
 #
 #  Aufruf (auf dem Server, im Repo-Verzeichnis):
 #      ./deploy.sh
@@ -22,7 +22,7 @@ set -euo pipefail
 #      DEPLOY_TARGET         Ziel-/NGINX-Ordner              (Default: /var/www/kodinitools.com/videokonverter)
 #      DEPLOY_SKIP_GIT=1     git fetch/reset ueberspringen (lokalen Stand deployen)
 #      DEPLOY_WITH_BACKEND=1 Zusaetzlich Backend bauen + PM2 neu laden
-#      DEPLOY_PM2_APP        Name des PM2-Prozesses          (Default: video-converter)
+#      DEPLOY_PM2_APP        Name des PM2-Prozesses          (Default: videokonverter-server)
 #      DEPLOY_KEEP           Zusaetzliche, im Zielordner zu
 #                            erhaltende Eintraege (Leerzeichen-getrennt)
 # ============================================================
@@ -30,7 +30,7 @@ set -euo pipefail
 # --- Konfiguration ------------------------------------------
 BRANCH="${DEPLOY_BRANCH:-main}"
 TARGET_DIR="${DEPLOY_TARGET:-/var/www/kodinitools.com/videokonverter}"
-PM2_APP="${DEPLOY_PM2_APP:-video-converter}"
+PM2_APP="${DEPLOY_PM2_APP:-videokonverter-server}"
 
 # Eintraege, die beim Sync im Zielordner NICHT geloescht werden.
 # Standardmaessig leer (der Zielordner enthaelt nur das statische

@@ -1,6 +1,6 @@
 module.exports = {
   apps: [{
-    name: 'video-converter',
+    name: 'videokonverter-server',
     script: './dist/server.js',
     instances: 1,
     exec_mode: 'fork',
