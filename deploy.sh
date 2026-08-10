@@ -23,8 +23,8 @@ set -euo pipefail
 #      DEPLOY_SKIP_GIT=1     git fetch/reset ueberspringen (lokalen Stand deployen)
 #      DEPLOY_WITH_BACKEND=1 Zusaetzlich Backend bauen + PM2 neu laden
 #      DEPLOY_PM2_APP        Name des PM2-Prozesses          (Default: videokonverter-server)
-#      DEPLOY_KEEP           Zusaetzliche, im Zielordner zu
-#                            erhaltende Eintraege (Leerzeichen-getrennt)
+#      DEPLOY_KEEP           Im Zielordner zu erhaltende Eintraege
+#                            (Leerzeichen-getrennt, Default: backend)
 # ============================================================
 
 # --- Konfiguration ------------------------------------------
@@ -33,9 +33,12 @@ TARGET_DIR="${DEPLOY_TARGET:-/var/www/kodinitools.com/videokonverter}"
 PM2_APP="${DEPLOY_PM2_APP:-videokonverter-server}"
 
 # Eintraege, die beim Sync im Zielordner NICHT geloescht werden.
-# Standardmaessig leer (der Zielordner enthaelt nur das statische
-# Frontend); ueber DEPLOY_KEEP erweiterbar.
-read -r -a KEEP <<< "${DEPLOY_KEEP:-}"
+# WICHTIG: Auf dem Produktions-VPS liegt das laufende Backend im
+# Web-Ordner (/var/www/kodinitools.com/videokonverter/backend) und
+# PM2 startet von dort. Deshalb ist "backend" standardmaessig
+# geschuetzt, damit ein Frontend-Deploy das Backend nicht loescht.
+# Ueber DEPLOY_KEEP erweiterbar (ersetzt den Default).
+read -r -a KEEP <<< "${DEPLOY_KEEP:-backend}"
 
 # Statische Frontend-Dateien, die veroeffentlicht werden:
 PUBLISH=(index.html converter.html robots.txt sitemap.xml css js)
