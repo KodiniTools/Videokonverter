@@ -98,6 +98,7 @@ if [[ "${DEPLOY_WITH_BACKEND:-0}" == "1" ]]; then
 
   log "Baue Backend (TypeScript)"
   pushd "$SCRIPT_DIR/backend" >/dev/null
+  mkdir -p logs uploads outputs
   if [[ -f package-lock.json ]]; then
     npm ci --include=dev
   else
@@ -106,12 +107,18 @@ if [[ "${DEPLOY_WITH_BACKEND:-0}" == "1" ]]; then
   npm run build
   [[ -f dist/server.js ]] || fail "Build fehlgeschlagen: backend/dist/server.js nicht gefunden."
 
-  if command -v pm2 >/dev/null 2>&1 && pm2 describe "$PM2_APP" >/dev/null 2>&1; then
-    log "Lade PM2-Backend neu: $PM2_APP"
-    pm2 reload "$PM2_APP" --update-env
+  if command -v pm2 >/dev/null 2>&1; then
+    if pm2 describe "$PM2_APP" >/dev/null 2>&1; then
+      log "Lade PM2-Backend neu: $PM2_APP (Port 9014)"
+      pm2 reload "$PM2_APP" --update-env
+    else
+      log "Starte PM2-Backend erstmalig: $PM2_APP (Port 9014)"
+      pm2 start ecosystem.config.js
+    fi
+    pm2 save >/dev/null 2>&1 || true
   else
-    log "PM2-Prozess '$PM2_APP' nicht gefunden – Backend-Reload uebersprungen"
-    log "Erststart ggf. mit: pm2 start ecosystem.config.js"
+    log "pm2 nicht gefunden – Backend nicht (neu) gestartet."
+    log "Installiere PM2 mit: npm install -g pm2"
   fi
   popd >/dev/null
 else
