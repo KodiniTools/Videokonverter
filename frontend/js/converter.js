@@ -86,7 +86,8 @@
     return null;
   }
 
-  function removeJob(id) {
+  // Remove a job from the browser only (local state + DOM).
+  function removeJobLocal(id) {
     for (var i = 0; i < jobs.length; i++) {
       if (jobs[i].id === id) {
         jobs.splice(i, 1);
@@ -96,6 +97,10 @@
     var el = document.getElementById('job-' + id);
     if (el) el.remove();
     updateQueueVisibility();
+  }
+
+  function removeJob(id) {
+    removeJobLocal(id);
 
     // Also remove it on the server so it does not reappear after a page reload
     fetch(API_URL + '/api/jobs/' + id, { method: 'DELETE' }).catch(function () {
@@ -291,6 +296,10 @@
     link.href = API_URL + job.downloadUrl;
     link.download = job.fileName.replace(/\.[^.]+$/, '') + '.' + job.targetFormat;
     link.click();
+
+    // The server deletes the converted file from disk once the download
+    // completes, so remove the finished job from the queue in the browser too.
+    removeJobLocal(jobId);
   }
 
   // ===== Rendering =====
