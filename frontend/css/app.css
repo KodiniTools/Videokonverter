@@ -42,8 +42,8 @@
   --color-background: #091428;
   --color-surface: #142640;
   --color-surface-hover: #1a3050;
-  --color-border: #1e3a5a;
-  --color-border-light: #162d4a;
+  --color-border: #305680;
+  --color-border-light: #26456a;
   --color-success: #34d399;
   --color-error: #f87171;
   --color-error-bg: #1a0808;
@@ -546,6 +546,12 @@ body {
 
 .btn-convert:hover:not(:disabled) {
   background: #059669;
+}
+
+/* White text has too little contrast on the bright dark-mode green –
+   use dark text/icon on the vibrant green instead */
+[data-theme="dark"] .btn-convert {
+  color: #091428;
 }
 
 .btn-download {
