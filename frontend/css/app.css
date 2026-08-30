@@ -14,6 +14,7 @@
   --color-secondary: #c9984d;
   --color-secondary-hover: #b58842;
   --color-text: #003971;
+  --color-heading: #003971;
   --color-text-secondary: #4a6a8a;
   --color-text-muted: #6b7d92;
   --color-background: #F5F4D6;
@@ -35,8 +36,9 @@
   --color-secondary: #014f99;
   --color-secondary-hover: #0168c9;
   --color-text: #f9f2d5;
+  --color-heading: #fdf6e3;
   --color-text-secondary: #f8e1a9;
-  --color-text-muted: #7A8DA0;
+  --color-text-muted: #9aaec2;
   --color-background: #091428;
   --color-surface: #142640;
   --color-surface-hover: #1a3050;
@@ -91,7 +93,7 @@ body {
 .hero-title {
   font-size: clamp(36px, 5vw, 56px);
   font-weight: 800;
-  color: var(--color-text);
+  color: var(--color-heading);
   line-height: 1.1;
   margin-bottom: 24px;
 }
@@ -186,7 +188,7 @@ body {
 .feature-title {
   font-size: 20px;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--color-heading);
 }
 
 .feature-description {
@@ -338,7 +340,7 @@ body {
 .drop-zone h3 {
   font-size: 20px;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-heading);
   margin: 0 0 8px;
 }
 
@@ -373,7 +375,7 @@ body {
 .conversion-queue h2 {
   font-size: 18px;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-heading);
   margin-bottom: 16px;
 }
 
@@ -402,7 +404,7 @@ body {
 
 .file-name {
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-heading);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -426,6 +428,12 @@ body {
 .status-processing { color: var(--color-primary); }
 .status-completed { color: var(--color-success); }
 .status-error { color: var(--color-error); }
+
+/* Blue status colors lack contrast on the dark surface – brighten them */
+[data-theme="dark"] .status-uploading,
+[data-theme="dark"] .status-pending {
+  color: #5aa9f0;
+}
 
 .progress-bar {
   height: 6px;
