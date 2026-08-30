@@ -223,6 +223,48 @@ router.get('/download/:jobId', downloadRateLimit, (req, res) => {
   });
 });
 
+// DELETE /api/jobs/:jobId — remove a queued job (frontend "Entfernen" button)
+// Handles both uploaded-but-not-converted files and running/finished conversions,
+// so a removed file does not reappear after a page reload via GET /api/jobs.
+router.delete('/jobs/:jobId', async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    let removed = false;
+
+    // Uploaded file that has not been converted yet
+    const uploadedFile = uploadedFiles.get(jobId);
+    if (uploadedFile) {
+      try {
+        await fs.unlink(uploadedFile.inputPath);
+      } catch (e) { /* file already gone – ignore */ }
+      uploadedFiles.delete(jobId);
+      removed = true;
+    }
+
+    // Job that is converting or already converted
+    const job = jobs.get(jobId);
+    if (job) {
+      // Stop the ffmpeg process if it is still running
+      try {
+        await ffmpegService.getProcessManager().kill(jobId, 'user_cancel');
+      } catch (e) { /* not running – ignore */ }
+      try {
+        await fs.unlink(job.outputPath);
+      } catch (e) { /* output not written yet – ignore */ }
+      jobs.delete(jobId);
+      removed = true;
+    }
+
+    console.log(`[Jobs] 🗑️  Removed job: ${jobId}${removed ? '' : ' (was not tracked)'}`);
+
+    // Idempotent: if the server no longer tracks it, the client is already in sync
+    res.json({ success: true, removed });
+  } catch (error) {
+    console.error('[Jobs] Delete error:', error);
+    res.status(500).json({ error: 'Failed to remove job' });
+  }
+});
+
 // Cancel/Abort API
 router.delete('/convert/:jobId', async (req, res) => {
   try {

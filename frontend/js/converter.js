@@ -96,6 +96,11 @@
     var el = document.getElementById('job-' + id);
     if (el) el.remove();
     updateQueueVisibility();
+
+    // Also remove it on the server so it does not reappear after a page reload
+    fetch(API_URL + '/api/jobs/' + id, { method: 'DELETE' }).catch(function () {
+      // network error – local removal already happened, ignore
+    });
   }
 
   function updateQueueVisibility() {
