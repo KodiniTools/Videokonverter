@@ -288,17 +288,71 @@
   }
 
   // ===== Download =====
+  var MIME_TYPES = {
+    mp4: 'video/mp4',
+    webm: 'video/webm',
+    avi: 'video/x-msvideo',
+    mov: 'video/quicktime',
+    mkv: 'video/x-matroska',
+    ts: 'video/mp2t'
+  };
+
+  // Simple browser download – lands in the default download folder
+  // (only asks for a location if the browser is configured to).
+  function fallbackDownload(url, filename) {
+    var link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+  }
+
   function downloadFile(jobId) {
     var job = findJob(jobId);
     if (!job || !job.downloadUrl) return;
 
-    var link = document.createElement('a');
-    link.href = API_URL + job.downloadUrl;
-    link.download = job.fileName.replace(/\.[^.]+$/, '') + '.' + job.targetFormat;
-    link.click();
+    var suggestedName = job.fileName.replace(/\.[^.]+$/, '') + '.' + job.targetFormat;
+    var url = API_URL + job.downloadUrl;
 
-    // The server deletes the converted file from disk once the download
-    // completes, so remove the finished job from the queue in the browser too.
+    // Modern browsers (Chrome/Edge): open a real "Save as" dialog so the user
+    // can choose the file name and location. Must run in the click gesture,
+    // so showSaveFilePicker() is called before any await.
+    if (window.showSaveFilePicker) {
+      var mime = MIME_TYPES[job.targetFormat] || 'application/octet-stream';
+      var accept = {};
+      accept[mime] = ['.' + job.targetFormat];
+
+      window
+        .showSaveFilePicker({
+          suggestedName: suggestedName,
+          types: [{ description: t('videoFileType'), accept: accept }]
+        })
+        .then(function (handle) {
+          // Stream the file from the server straight to disk (no full copy in
+          // memory – important for files up to 5 GB).
+          return fetch(url).then(function (response) {
+            if (!response.ok || !response.body) {
+              throw new Error('HTTP ' + response.status);
+            }
+            return handle.createWritable().then(function (writable) {
+              return response.body.pipeTo(writable);
+            });
+          });
+        })
+        .then(function () {
+          // Saved successfully – the server removed the file after the download,
+          // so drop the finished job from the queue too.
+          removeJobLocal(jobId);
+        })
+        .catch(function (err) {
+          // User cancelled the dialog – keep the job so they can retry.
+          if (err && err.name === 'AbortError') return;
+          showError(t('downloadError'));
+        });
+      return;
+    }
+
+    // Fallback (Firefox/Safari): trigger a normal browser download.
+    fallbackDownload(url, suggestedName);
     removeJobLocal(jobId);
   }
 
