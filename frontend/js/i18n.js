@@ -44,6 +44,8 @@
       uploadAborted: 'Upload abgebrochen',
       jobNotFound: 'Job nicht gefunden oder nicht bereit',
       conversionFailed: 'Konvertierung fehlgeschlagen',
+      downloadError: 'Download fehlgeschlagen',
+      videoFileType: 'Videodatei',
 
       // SEO Meta
       metaTitle: 'Kostenloser Video Converter Online \u2013 MP4, WebM, AVI, MOV, MKV konvertieren',
@@ -93,6 +95,8 @@
       uploadAborted: 'Upload aborted',
       jobNotFound: 'Job not found or not ready',
       conversionFailed: 'Conversion failed',
+      downloadError: 'Download failed',
+      videoFileType: 'Video file',
 
       // SEO Meta
       metaTitle: 'Free Online Video Converter \u2013 Convert MP4, WebM, AVI, MOV, MKV',
