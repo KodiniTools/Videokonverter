@@ -548,6 +548,12 @@ body {
   background: #059669;
 }
 
+/* White text has too little contrast on the bright dark-mode green –
+   use dark text/icon on the vibrant green instead */
+[data-theme="dark"] .btn-convert {
+  color: #091428;
+}
+
 .btn-download {
   background: var(--color-primary);
   color: var(--color-text-on-primary);
