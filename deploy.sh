@@ -23,6 +23,10 @@ set -euo pipefail
 #      DEPLOY_SKIP_GIT=1     git fetch/reset ueberspringen (lokalen Stand deployen)
 #      DEPLOY_WITH_BACKEND=1 Zusaetzlich Backend bauen + PM2 neu laden
 #      DEPLOY_PM2_APP        Name des PM2-Prozesses          (Default: videokonverter-server)
+#      DEPLOY_BACKEND_DIR    Laufzeit-Ordner des Backends, aus dem PM2 startet
+#                            (Default: <DEPLOY_TARGET>/backend). Liegt er nicht im
+#                            Repo, wird der Build (dist + package*.json) dorthin
+#                            synchronisiert – sonst laeuft PM2 mit altem Code weiter.
 #      DEPLOY_KEEP           Im Zielordner zu erhaltende Eintraege
 #                            (Leerzeichen-getrennt, Default: backend)
 # ============================================================
@@ -99,9 +103,11 @@ if [[ "${DEPLOY_WITH_BACKEND:-0}" == "1" ]]; then
   command -v node >/dev/null 2>&1 || fail "node ist nicht installiert."
   command -v npm  >/dev/null 2>&1 || fail "npm ist nicht installiert."
 
+  BACKEND_SRC="$SCRIPT_DIR/backend"
+  BACKEND_RUNTIME="${DEPLOY_BACKEND_DIR:-$TARGET_DIR/backend}"
+
   log "Baue Backend (TypeScript)"
-  pushd "$SCRIPT_DIR/backend" >/dev/null
-  mkdir -p logs uploads outputs
+  pushd "$BACKEND_SRC" >/dev/null
   if [[ -f package-lock.json ]]; then
     npm ci --include=dev
   else
@@ -109,7 +115,30 @@ if [[ "${DEPLOY_WITH_BACKEND:-0}" == "1" ]]; then
   fi
   npm run build
   [[ -f dist/server.js ]] || fail "Build fehlgeschlagen: backend/dist/server.js nicht gefunden."
+  popd >/dev/null
 
+  # PM2 startet auf dem Produktions-VPS aus $BACKEND_RUNTIME, nicht aus dem
+  # Repo. Ohne diesen Sync wuerde "pm2 reload" nur den ALTEN Build neu starten
+  # (z.B. ohne DELETE /api/jobs/:id -> 404 im Frontend).
+  mkdir -p "$BACKEND_RUNTIME"
+  if [[ "$(cd "$BACKEND_SRC" && pwd -P)" != "$(cd "$BACKEND_RUNTIME" && pwd -P)" ]]; then
+    log "Synchronisiere Backend-Build nach $BACKEND_RUNTIME"
+    rm -rf "$BACKEND_RUNTIME/dist"
+    cp -a "$BACKEND_SRC/dist" "$BACKEND_RUNTIME/dist"
+    for f in package.json package-lock.json ecosystem.config.js; do
+      [[ -f "$BACKEND_SRC/$f" ]] && cp -a "$BACKEND_SRC/$f" "$BACKEND_RUNTIME/$f"
+    done
+    pushd "$BACKEND_RUNTIME" >/dev/null
+    if [[ -f package-lock.json ]]; then
+      npm ci --omit=dev
+    else
+      npm install --omit=dev
+    fi
+    popd >/dev/null
+  fi
+
+  pushd "$BACKEND_RUNTIME" >/dev/null
+  mkdir -p logs uploads outputs
   if command -v pm2 >/dev/null 2>&1; then
     if pm2 describe "$PM2_APP" >/dev/null 2>&1; then
       log "Lade PM2-Backend neu: $PM2_APP (Port 9014)"
