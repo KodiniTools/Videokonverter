@@ -6,6 +6,13 @@ import { uploadRateLimit, convertRateLimit, downloadRateLimit } from '../middlew
 import { FFmpegService } from '../services/ffmpeg.service.js';
 import { DiskSpaceService } from '../services/disk-space.service.js';
 import { config } from '../config.js';
+import {
+  uploadedFiles,
+  jobs,
+  addUploadedFile,
+  addJob,
+  removeStaleEntries,
+} from '../services/job-store.service.js';
 import type { VideoFormat, VideoQuality } from '../types/conversion.js';
 
 const router = Router();
@@ -15,48 +22,21 @@ const diskSpaceService = new DiskSpaceService();
 // Export für Graceful Shutdown
 export { ffmpegService };
 
-// Uploaded files Map (vor Konvertierung)
-const uploadedFiles = new Map<string, { inputPath: string; originalName: string; fileSize: number }>();
-
-// Conversion Jobs Map (nach Start der Konvertierung)
-const jobs = new Map<string, { outputPath: string; format: string; originalName: string }>();
-
-/**
- * Helper function to add uploaded files with size limit
- */
-function addUploadedFile(jobId: string, fileData: { inputPath: string; originalName: string; fileSize: number }) {
-  if (uploadedFiles.size >= config.jobs.maxUploadedFiles) {
-    const firstKey = uploadedFiles.keys().next().value;
-    if (firstKey) {
-      uploadedFiles.delete(firstKey);
-      console.log(`[Upload] ⚠️  Map limit reached, removed oldest: ${firstKey}`);
-    }
-  }
-  uploadedFiles.set(jobId, fileData);
-}
-
-/**
- * Helper function to add jobs with size limit
- */
-function addJob(jobId: string, jobData: { outputPath: string; format: string; originalName: string }) {
-  if (jobs.size >= config.jobs.maxJobs) {
-    const firstKey = jobs.keys().next().value;
-    if (firstKey) {
-      jobs.delete(firstKey);
-      console.log(`[Jobs] ⚠️  Map limit reached (${config.jobs.maxJobs}), removed oldest: ${firstKey}`);
-    }
-  }
-  jobs.set(jobId, jobData);
-}
-
 // GET /api/jobs — return all known jobs for frontend restoration after reload
-router.get('/jobs', (req, res) => {
+router.get('/jobs', async (req, res) => {
+  // Drop entries whose files were already removed (cleanup, download, …) so
+  // they do not reappear in the frontend after a reload.
+  const processManager = ffmpegService.getProcessManager();
+  await removeStaleEntries((jobId) => processManager.isActive(jobId));
+
   const result: Array<{
     jobId: string;
-    status: 'uploaded' | 'processing';
+    status: 'uploaded' | 'processing' | 'completed';
     originalName: string;
     fileSize?: number;
     format?: string;
+    downloadUrl?: string;
+    convertedFileSize?: number;
   }> = [];
 
   for (const [jobId, file] of uploadedFiles.entries()) {
@@ -69,11 +49,30 @@ router.get('/jobs', (req, res) => {
   }
 
   for (const [jobId, job] of jobs.entries()) {
+    if (processManager.isActive(jobId)) {
+      result.push({
+        jobId,
+        status: 'processing',
+        originalName: job.originalName,
+        format: job.format,
+      });
+      continue;
+    }
+
+    // Not running any more and the output still exists → finished, downloadable
+    let convertedFileSize: number | undefined;
+    try {
+      convertedFileSize = (await fs.stat(job.outputPath)).size;
+    } catch {
+      /* size is optional */
+    }
     result.push({
       jobId,
-      status: 'processing',
+      status: 'completed',
       originalName: job.originalName,
       format: job.format,
+      downloadUrl: `/api/download/${jobId}`,
+      convertedFileSize,
     });
   }
 

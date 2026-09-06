@@ -57,7 +57,7 @@ app.get('/health', (req, res) => {
 initWebSocket(server);
 
 // Cleanup Service
-const cleanupService = new CleanupService();
+const cleanupService = new CleanupService((jobId) => ffmpegService.getProcessManager().isActive(jobId));
 cleanupService.start();
 
 // Disk Space Monitoring

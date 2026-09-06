@@ -1,9 +1,16 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { config } from '../config.js';
+import { removeStaleEntries } from './job-store.service.js';
 
 export class CleanupService {
   private intervalId?: NodeJS.Timeout;
+
+  /**
+   * @param isJobActive returns true while a conversion is still running –
+   *   its registry entry must survive even though the output is not complete yet
+   */
+  constructor(private readonly isJobActive: (jobId: string) => boolean = () => false) {}
 
   start() {
     console.log('[Cleanup] Service started');
@@ -39,6 +46,14 @@ export class CleanupService {
       } catch (error) {
         console.error(`[Cleanup] Error in ${dir}:`, error);
       }
+    }
+
+    // Files are gone → forget the jobs too, otherwise GET /api/jobs keeps
+    // returning them until the next server restart.
+    try {
+      await removeStaleEntries(this.isJobActive);
+    } catch (error) {
+      console.error('[Cleanup] Error removing stale jobs:', error);
     }
   }
 }

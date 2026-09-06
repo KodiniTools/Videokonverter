@@ -103,9 +103,17 @@
     removeJobLocal(id);
 
     // Also remove it on the server so it does not reappear after a page reload
-    fetch(API_URL + '/api/jobs/' + id, { method: 'DELETE' }).catch(function () {
-      // network error – local removal already happened, ignore
-    });
+    fetch(API_URL + '/api/jobs/' + id, { method: 'DELETE' })
+      .then(function (res) {
+        if (res.status === 404) {
+          // The running backend predates DELETE /api/jobs/:id – the entry will
+          // reappear after a reload until the backend is redeployed.
+          console.warn('[Videokonverter] Backend does not support DELETE /api/jobs/:id – redeploy the backend (DEPLOY_WITH_BACKEND=1 ./deploy.sh).');
+        }
+      })
+      .catch(function () {
+        // network error – local removal already happened, ignore
+      });
   }
 
   function updateQueueVisibility() {
@@ -668,6 +676,7 @@
       for (var i = 0; i < data.jobs.length; i++) {
         var serverJob = data.jobs[i];
         if (findJob(serverJob.jobId)) continue; // already tracked
+        var isCompleted = serverJob.status === 'completed';
         var job = {
           id: serverJob.jobId,
           fileName: serverJob.originalName,
@@ -676,10 +685,10 @@
           targetFormat: serverJob.format || 'mp4',
           quality: 'high',
           status: serverJob.status,
-          progress: serverJob.status === 'processing' ? 50 : 0,
+          progress: isCompleted ? 100 : serverJob.status === 'processing' ? 50 : 0,
           error: null,
-          downloadUrl: null,
-          convertedFileSize: null,
+          downloadUrl: isCompleted ? serverJob.downloadUrl || '/api/download/' + serverJob.jobId : null,
+          convertedFileSize: isCompleted ? serverJob.convertedFileSize || null : null,
           selectedFormat: serverJob.format || 'mp4',
           selectedQuality: 'high',
         };

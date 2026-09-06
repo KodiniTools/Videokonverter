@@ -10,6 +10,7 @@
     "dev": "npm run dev --prefix backend",
     "build": "npm run build --prefix backend",
     "start": "npm run start --prefix backend",
+    "test": "npm run test --prefix backend",
     "lint": "npm run lint --prefix backend",
     "lint:fix": "npm run lint:fix --prefix backend",
     "format": "npm run format --prefix backend"
