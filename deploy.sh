@@ -59,9 +59,18 @@ fail() { printf '\033[1;31m✗ %s\033[0m\n' "$*" >&2; exit 1; }
 if [[ "${DEPLOY_SKIP_GIT:-0}" != "1" ]]; then
   command -v git >/dev/null 2>&1 || fail "git ist nicht installiert."
   log "Hole aktuellen Stand von origin/$BRANCH"
+  SCRIPT_HASH_BEFORE="$(sha256sum "${BASH_SOURCE[0]}" | cut -d' ' -f1)"
   git fetch --prune origin "$BRANCH"
   git checkout "$BRANCH"
   git reset --hard "origin/$BRANCH"
+
+  # Bash liest ein Skript waehrend der Ausfuehrung weiter aus der ALTEN Datei.
+  # Hat der Reset deploy.sh selbst veraendert, mit der neuen Version neu starten,
+  # sonst laufen die restlichen Schritte noch mit der alten Logik.
+  if [[ "$(sha256sum "${BASH_SOURCE[0]}" | cut -d' ' -f1)" != "$SCRIPT_HASH_BEFORE" ]]; then
+    log "deploy.sh wurde aktualisiert – starte Deploy mit neuer Version neu"
+    DEPLOY_SKIP_GIT=1 exec bash "${BASH_SOURCE[0]}" "$@"
+  fi
 else
   log "DEPLOY_SKIP_GIT=1 – ueberspringe git, deploye aktuellen Arbeitsstand"
 fi
