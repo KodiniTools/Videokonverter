@@ -71,7 +71,11 @@
 
     job.progress = update.progress;
     job.status = update.status;
-    if (update.error) job.error = update.error;
+    if (update.error) {
+      job.error = update.error;
+      job.errorKey = null;
+      job.errorDetail = null;
+    }
     if (update.downloadUrl) job.downloadUrl = update.downloadUrl;
     if (update.convertedFileSize) job.convertedFileSize = update.convertedFileSize;
 
@@ -166,6 +170,8 @@
       status: 'uploading',
       progress: 0,
       error: null,
+      errorKey: null,
+      errorDetail: null,
       downloadUrl: null,
       convertedFileSize: null,
       selectedFormat: 'mp4',
@@ -199,11 +205,11 @@
           job.uploadedFilePath = response.filePath;
         } catch (err) {
           job.status = 'error';
-          job.error = t('uploadFailedError');
+          setJobError(job, 'uploadFailedError');
         }
       } else {
         job.status = 'error';
-        job.error = t('uploadFailedError') + ': ' + xhr.status;
+        setJobError(job, 'uploadFailedError', String(xhr.status));
       }
       renderJob(job);
       checkAllUploadsComplete();
@@ -211,14 +217,14 @@
 
     xhr.addEventListener('error', function () {
       job.status = 'error';
-      job.error = t('uploadError');
+      setJobError(job, 'uploadError');
       renderJob(job);
       checkAllUploadsComplete();
     });
 
     xhr.addEventListener('abort', function () {
       job.status = 'error';
-      job.error = t('uploadAborted');
+      setJobError(job, 'uploadAborted');
       renderJob(job);
       checkAllUploadsComplete();
     });
@@ -278,14 +284,14 @@
         job.status = 'processing';
       } else {
         job.status = 'error';
-        job.error = t('conversionFailed') + ': ' + xhr.status;
+        setJobError(job, 'conversionFailed', String(xhr.status));
       }
       renderJob(job);
     });
 
     xhr.addEventListener('error', function () {
       job.status = 'error';
-      job.error = t('conversionFailed');
+      setJobError(job, 'conversionFailed');
       renderJob(job);
     });
 
@@ -381,6 +387,28 @@
       case 'completed': return t('statusCompleted');
       case 'error': return t('statusError');
       default: return '';
+    }
+  }
+
+  // Client-side errors are stored as translation key + optional detail so
+  // they can be re-rendered when the locale changes. Server errors arrive as
+  // plain text in job.error.
+  function setJobError(job, key, detail) {
+    job.errorKey = key;
+    job.errorDetail = detail || null;
+    job.error = null;
+  }
+
+  function getErrorText(job) {
+    if (job.errorKey) {
+      return t(job.errorKey) + (job.errorDetail ? ': ' + job.errorDetail : '');
+    }
+    return job.error || '';
+  }
+
+  function renderAllJobs() {
+    for (var i = 0; i < jobs.length; i++) {
+      renderJob(jobs[i]);
     }
   }
 
@@ -510,10 +538,11 @@
     }
 
     // Error text
-    if (job.error) {
+    var errorText = getErrorText(job);
+    if (errorText) {
       var errorEl = document.createElement('div');
       errorEl.className = 'error-text';
-      errorEl.textContent = job.error;
+      errorEl.textContent = errorText;
       el.appendChild(errorEl);
     }
 
@@ -665,6 +694,10 @@
     }
   });
 
+  // Re-render the queue when the language changes (the nav dispatches
+  // 'locale-changed', i18n.js applies it and then fires 'i18n-applied').
+  window.addEventListener('i18n-applied', renderAllJobs);
+
   // ===== Initialize =====
   connectWS();
 
@@ -687,6 +720,8 @@
           status: serverJob.status,
           progress: isCompleted ? 100 : serverJob.status === 'processing' ? 50 : 0,
           error: null,
+          errorKey: null,
+          errorDetail: null,
           downloadUrl: isCompleted ? serverJob.downloadUrl || '/api/download/' + serverJob.jobId : null,
           convertedFileSize: isCompleted ? serverJob.convertedFileSize || null : null,
           selectedFormat: serverJob.format || 'mp4',
