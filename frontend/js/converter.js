@@ -71,6 +71,10 @@
 
     job.progress = update.progress;
     job.status = update.status;
+    // Server could not determine the input duration (yet): show activity
+    // instead of a stuck 0 %.
+    job.indeterminate = update.status === 'processing' && !!update.indeterminate;
+    job.processedSeconds = typeof update.processedSeconds === 'number' ? update.processedSeconds : null;
     if (update.error) {
       job.error = update.error;
       job.errorKey = null;
@@ -378,12 +382,26 @@
       : (bytes / 1024 / 1024).toFixed(1) + ' MB';
   }
 
+  function formatClock(totalSeconds) {
+    var s = Math.max(0, Math.floor(totalSeconds));
+    var h = Math.floor(s / 3600);
+    var m = Math.floor((s % 3600) / 60);
+    var sec = s % 60;
+    var mm = (m < 10 ? '0' : '') + m;
+    var ss = (sec < 10 ? '0' : '') + sec;
+    return h > 0 ? h + ':' + mm + ':' + ss : mm + ':' + ss;
+  }
+
   function getStatusText(job) {
     switch (job.status) {
       case 'uploading': return t('statusUploading') + ' ' + job.progress + '%';
       case 'uploaded': return t('statusUploaded');
       case 'pending': return t('statusPending');
-      case 'processing': return t('statusProcessing') + ' ' + job.progress + '%';
+      case 'processing':
+        if (job.indeterminate) {
+          return t('statusProcessing') + (job.processedSeconds ? ' ' + formatClock(job.processedSeconds) : '');
+        }
+        return t('statusProcessing') + ' ' + job.progress + '%';
       case 'completed': return t('statusCompleted');
       case 'error': return t('statusError');
       default: return '';
@@ -465,8 +483,12 @@
       var progressBar = document.createElement('div');
       progressBar.className = 'progress-bar';
       var progressFill = document.createElement('div');
-      progressFill.className = 'progress-fill';
-      progressFill.style.width = job.progress + '%';
+      if (job.status === 'processing' && job.indeterminate) {
+        progressFill.className = 'progress-fill indeterminate';
+      } else {
+        progressFill.className = 'progress-fill';
+        progressFill.style.width = job.progress + '%';
+      }
       progressBar.appendChild(progressFill);
       el.appendChild(progressBar);
     }

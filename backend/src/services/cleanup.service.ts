@@ -38,6 +38,10 @@ export class CleanupService {
           const filePath = path.join(dir, file);
           const stats = await fs.stat(filePath);
 
+          // Only files are managed here; a stray directory (e.g. uploads/de)
+          // must not abort the whole cleanup run with EISDIR.
+          if (!stats.isFile()) continue;
+
           if (now - stats.mtimeMs > config.cleanup.maxAgeMs) {
             await fs.unlink(filePath);
             console.log(`[Cleanup] Deleted: ${filePath}`);

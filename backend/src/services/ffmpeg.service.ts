@@ -3,6 +3,12 @@ import fs from 'fs/promises';
 import { QUALITY_PRESETS, type ConversionOptions } from '../types/conversion.js';
 import { broadcastProgress } from '../websocket.js';
 import { ProcessManagerService } from './process-manager.service.js';
+import {
+  computeProgress,
+  parseDurationFromStderr,
+  parseProcessedTimeFromStderr,
+  probeDuration,
+} from './media-probe.service.js';
 
 export class FFmpegService {
   private processManager = new ProcessManagerService();
@@ -126,11 +132,53 @@ export class FFmpegService {
       const MAX_STDERR_LINES = 100;
       let duration = 0;
       let lastProgress = 0;
+      let lastProcessed = 0;
+      let lastIndeterminateBroadcast = 0;
+      let finished = false;
 
       broadcastProgress({
         jobId,
         progress: 0,
-        status: 'processing'
+        status: 'processing',
+      });
+
+      const emitProgress = () => {
+        if (finished) return;
+        if (duration > 0) {
+          const progress = computeProgress(lastProcessed, duration);
+          if (progress > lastProgress) {
+            lastProgress = progress;
+            broadcastProgress({
+              jobId,
+              progress,
+              status: 'processing',
+            });
+          }
+          return;
+        }
+        // Duration unknown (yet): tell the client that work is happening so it
+        // can show an indeterminate bar instead of a stuck 0 %. Throttled.
+        const now = Date.now();
+        if (now - lastIndeterminateBroadcast >= 1000) {
+          lastIndeterminateBroadcast = now;
+          broadcastProgress({
+            jobId,
+            progress: 0,
+            status: 'processing',
+            indeterminate: true,
+            processedSeconds: Math.floor(lastProcessed),
+          });
+        }
+      };
+
+      // ffmpeg prints "Duration: N/A" for inputs without a duration in the
+      // header (e.g. MediaRecorder WebM). Probe in parallel so the progress bar
+      // works for those files too; the stderr value below is a second source.
+      probeDuration(inputPath).then((probed) => {
+        if (probed && probed > duration) {
+          duration = probed;
+          emitProgress();
+        }
       });
 
       // Parse stderr for progress
@@ -145,32 +193,21 @@ export class FFmpegService {
         }
 
         // Extract duration
-        const durationMatch = output.match(/Duration: (\d{2}):(\d{2}):(\d{2})/);
-        if (durationMatch) {
-          const [, hours, minutes, seconds] = durationMatch;
-          duration = parseInt(hours) * 3600 + parseInt(minutes) * 60 + parseInt(seconds);
+        const parsedDuration = parseDurationFromStderr(output);
+        if (parsedDuration && parsedDuration > duration) {
+          duration = parsedDuration;
         }
 
         // Extract progress
-        const timeMatch = output.match(/time=(\d{2}):(\d{2}):(\d{2})/);
-        if (timeMatch && duration > 0) {
-          const [, hours, minutes, seconds] = timeMatch;
-          const currentTime = parseInt(hours) * 3600 + parseInt(minutes) * 60 + parseInt(seconds);
-          const progress = Math.min(Math.round((currentTime / duration) * 100), 99);
-
-          // Only broadcast if progress changed significantly
-          if (progress > lastProgress) {
-            lastProgress = progress;
-            broadcastProgress({
-              jobId,
-              progress,
-              status: 'processing'
-            });
-          }
+        const processed = parseProcessedTimeFromStderr(output);
+        if (processed !== null) {
+          lastProcessed = processed;
+          emitProgress();
         }
       });
 
       ffmpegProcess.on('close', async (code) => {
+        finished = true;
         // FIX Problem 5: Streams explizit schließen um Resource-Leaks zu vermeiden
         ffmpegProcess.stdin?.destroy();
         ffmpegProcess.stdout?.destroy();
@@ -232,6 +269,7 @@ export class FFmpegService {
       });
 
       ffmpegProcess.on('error', async (err) => {
+        finished = true;
         console.error(`[FFmpeg] ❌ Process error: ${err.message}`);
 
         // FIX Problem 5: Streams explizit schließen um Resource-Leaks zu vermeiden
