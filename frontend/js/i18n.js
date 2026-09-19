@@ -150,6 +150,10 @@
     if (twTitle) twTitle.setAttribute('content', t('metaTitle'));
     var twDesc = document.querySelector('meta[name="twitter:description"]');
     if (twDesc) twDesc.setAttribute('content', t('metaDescription'));
+
+    // Notify dynamically rendered UI (e.g. the conversion queue) so it can
+    // re-render its texts in the new locale.
+    window.dispatchEvent(new CustomEvent('i18n-applied', { detail: { locale: currentLocale } }));
   }
 
   function setLocale(lang) {
@@ -172,6 +176,7 @@
   // Expose for converter.js
   window.AppI18n = {
     t: t,
+    getLocale: function () { return currentLocale; },
     setLocale: setLocale,
     applyTranslations: applyTranslations
   };
