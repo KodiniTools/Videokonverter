@@ -449,6 +449,26 @@ body {
   transition: width 0.3s ease;
 }
 
+/* Duration of the input unknown: show activity instead of a stuck 0 % */
+.progress-fill.indeterminate {
+  width: 30%;
+  transition: none;
+  animation: progress-indeterminate 1.4s ease-in-out infinite;
+}
+
+@keyframes progress-indeterminate {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(340%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-fill.indeterminate {
+    animation: none;
+    width: 100%;
+    opacity: 0.5;
+  }
+}
+
 .format-selection {
   background: var(--color-surface-hover);
   border-radius: 8px;
