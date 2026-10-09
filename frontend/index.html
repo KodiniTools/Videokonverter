@@ -109,16 +109,27 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/favicon.ico">
-    <meta name="theme-color" content="#0066cc">
+    <meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0a1324" media="(prefers-color-scheme: dark)">
+    <!-- Theme vor dem ersten Paint setzen (Tokens: Dark auf :root, Light über data-theme),
+         damit Light-Nutzer keinen dunklen Flash sehen. js/theme.js übernimmt danach. -->
+    <script>
+      try {
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') === 'dark' ? 'dark' : 'light');
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    </script>
 
     <link rel="stylesheet" href="/fontawesome/css/fontawesome.min.css" />
     <link rel="stylesheet" href="/fontawesome/css/solid.min.css" />
+    <link rel="stylesheet" href="/videokonverter/css/tokens-v2.css" />
     <link rel="stylesheet" href="/videokonverter/css/app.css" />
   </head>
   <body>
     <!--#include virtual="/partials/nav.html" -->
 
-    <div class="landing">
+    <div id="app" class="landing">
       <!-- Hero Section -->
       <section class="hero">
         <div class="hero-content">
@@ -136,7 +147,7 @@
           </div>
           <a href="/videokonverter/converter.html" class="hero-cta">
             <span data-i18n="heroCta">Jetzt starten</span>
-            <svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </a>

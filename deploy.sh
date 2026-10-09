@@ -45,7 +45,7 @@ PM2_APP="${DEPLOY_PM2_APP:-videokonverter-server}"
 read -r -a KEEP <<< "${DEPLOY_KEEP:-backend}"
 
 # Statische Frontend-Dateien, die veroeffentlicht werden:
-PUBLISH=(index.html converter.html robots.txt sitemap.xml css js)
+PUBLISH=(index.html converter.html robots.txt sitemap.xml css js fonts)
 
 # Repo-Root = Verzeichnis dieses Skripts
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
