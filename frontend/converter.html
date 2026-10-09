@@ -37,19 +37,30 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
     <link rel="apple-touch-icon" href="/favicon.ico">
-    <meta name="theme-color" content="#0066cc">
+    <meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0a1324" media="(prefers-color-scheme: dark)">
+    <!-- Theme vor dem ersten Paint setzen (Tokens: Dark auf :root, Light über data-theme),
+         damit Light-Nutzer keinen dunklen Flash sehen. js/theme.js übernimmt danach. -->
+    <script>
+      try {
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') === 'dark' ? 'dark' : 'light');
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    </script>
 
     <link rel="stylesheet" href="/fontawesome/css/fontawesome.min.css" />
     <link rel="stylesheet" href="/fontawesome/css/solid.min.css" />
+    <link rel="stylesheet" href="/videokonverter/css/tokens-v2.css" />
     <link rel="stylesheet" href="/videokonverter/css/app.css" />
   </head>
   <body>
     <!--#include virtual="/partials/nav.html" -->
 
-    <div class="converter-page">
+    <div id="app" class="converter-page">
       <main class="main">
         <a href="/videokonverter/" class="home-link" data-i18n-title="backToHome">
-          <svg class="home-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="home-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
           <span class="home-link-text" data-i18n="backToHome">Zur Startseite</span>
@@ -66,10 +77,10 @@
             <div class="drop-zone-content">
               <div id="upload-button" class="upload-button">
                 <svg id="upload-icon-default" class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 <svg id="upload-icon-spinner" class="upload-icon spinning" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="display:none">
-                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </div>
               <h3 id="drop-zone-title" data-i18n="dropFilesHere">Videodateien hier ablegen</h3>

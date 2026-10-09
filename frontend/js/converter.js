@@ -584,7 +584,7 @@
       convertSvg.setAttribute('stroke', 'currentColor');
       var convertPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       convertPath.setAttribute('d', 'M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z');
-      convertPath.setAttribute('stroke-width', '2');
+      convertPath.setAttribute('stroke-width', '1.75');
       convertPath.setAttribute('stroke-linecap', 'round');
       convertPath.setAttribute('stroke-linejoin', 'round');
       convertSvg.appendChild(convertPath);
@@ -605,7 +605,7 @@
       downloadSvg.setAttribute('stroke', 'currentColor');
       var downloadPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       downloadPath.setAttribute('d', 'M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3');
-      downloadPath.setAttribute('stroke-width', '2');
+      downloadPath.setAttribute('stroke-width', '1.75');
       downloadPath.setAttribute('stroke-linecap', 'round');
       downloadSvg.appendChild(downloadPath);
       downloadBtn.appendChild(downloadSvg);
@@ -624,7 +624,7 @@
     removeSvg.setAttribute('stroke', 'currentColor');
     var removePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     removePath.setAttribute('d', 'M18 6L6 18M6 6l12 12');
-    removePath.setAttribute('stroke-width', '2');
+    removePath.setAttribute('stroke-width', '1.75');
     removePath.setAttribute('stroke-linecap', 'round');
     removeSvg.appendChild(removePath);
     removeBtn.appendChild(removeSvg);
