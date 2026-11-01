@@ -106,9 +106,41 @@
     }
   };
 
-  var currentLocale = localStorage.getItem('locale') || 'de';
-  if (currentLocale !== 'de' && currentLocale !== 'en') {
+  function isLocale(value) {
+    return value === 'de' || value === 'en';
+  }
+
+  function readStoredLocale() {
+    try {
+      return localStorage.getItem('locale');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ?lang=de|en (englische URL, hreflang-Ziel) hat Vorrang vor der gespeicherten
+  // Sprache. Speichern, damit die SSI-Navigation (liest 'locale' bei
+  // DOMContentLoaded) dieselbe Sprache zeigt.
+  var urlLocale = new URLSearchParams(location.search).get('lang');
+  var currentLocale = isLocale(urlLocale) ? urlLocale : readStoredLocale();
+  if (!isLocale(currentLocale)) {
     currentLocale = 'de';
+  }
+  if (isLocale(urlLocale)) {
+    try {
+      localStorage.setItem('locale', urlLocale);
+    } catch (e) {
+      // Speicher gesperrt: Sprache gilt nur für diesen Aufruf
+    }
+  }
+
+  // Seiten-URL ohne Parameter aus dem statischen Canonical (Deutsch).
+  var canonicalEl = document.querySelector('link[rel="canonical"]');
+  var pageUrl = canonicalEl ? canonicalEl.getAttribute('href').split('?')[0] : null;
+
+  /** Deutsch ohne Parameter, Englisch mit ?lang=en. */
+  function localizedUrl(lang) {
+    return lang === 'en' ? pageUrl + '?lang=en' : pageUrl;
   }
 
   function t(key) {
@@ -142,6 +174,12 @@
     if (ogTitle) ogTitle.setAttribute('content', t('metaTitle'));
     var ogDesc = document.querySelector('meta[property="og:description"]');
     if (ogDesc) ogDesc.setAttribute('content', t('metaDescription'));
+    // Canonical und og:url je Sprache (hreflang steht statisch im HTML)
+    if (pageUrl) {
+      canonicalEl.setAttribute('href', localizedUrl(currentLocale));
+      var ogUrl = document.querySelector('meta[property="og:url"]');
+      if (ogUrl) ogUrl.setAttribute('content', localizedUrl(currentLocale));
+    }
     var ogLocale = document.querySelector('meta[property="og:locale"]');
     if (ogLocale) ogLocale.setAttribute('content', currentLocale === 'de' ? 'de_DE' : 'en_US');
 
