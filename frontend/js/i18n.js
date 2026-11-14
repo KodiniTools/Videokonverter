@@ -3,7 +3,7 @@
 
   var translations = {
     de: {
-      heroTitle: 'Video Converter',
+      heroTitle: 'Video konvertieren online',
       heroSubtitle: 'Konvertieren Sie Ihre Videos schnell und einfach in verschiedene Formate - direkt im Browser, kostenlos und ohne Installation.',
       heroCta: 'Jetzt starten',
       feature1Title: 'Blitzschnelle Konvertierung',
@@ -48,13 +48,13 @@
       videoFileType: 'Videodatei',
 
       // SEO Meta
-      metaTitle: 'Kostenloser Video Converter Online \u2013 MP4, WebM, AVI, MOV, MKV konvertieren',
-      metaDescription: 'Videos kostenlos online konvertieren: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS. Bis zu 5 GB, direkt im Browser, ohne Installation. Schnell, sicher und datenschutzfreundlich.',
+      metaTitle: 'Video konvertieren online \u2013 MP4, MOV, AVI, WebM bis 5 GB | KodiniTools',
+      metaDescription: 'Video konvertieren online und kostenlos: MOV in MP4, AVI in MP4, WebM in MP4, MKV, FLV, WMV und TS. Grosse Dateien bis 5 GB, ohne Installation und Anmeldung.',
       metaTitleConverter: 'Video konvertieren \u2013 Kostenloser Online Video Converter',
       metaDescriptionConverter: 'Video jetzt konvertieren: Datei hochladen, Format und Qualit\u00e4t w\u00e4hlen, fertig. MP4, WebM, AVI, MOV, MKV, TS. Bis zu 5 GB, kostenlos und ohne Anmeldung.'
     },
     en: {
-      heroTitle: 'Video Converter',
+      heroTitle: 'Video Converter Online',
       heroSubtitle: 'Convert your videos quickly and easily to various formats - directly in your browser, free and without installation.',
       heroCta: 'Get Started',
       feature1Title: 'Lightning-Fast Conversion',
@@ -99,8 +99,8 @@
       videoFileType: 'Video file',
 
       // SEO Meta
-      metaTitle: 'Free Online Video Converter \u2013 Convert MP4, WebM, AVI, MOV, MKV',
-      metaDescription: 'Convert videos for free online: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS. Up to 5 GB, directly in your browser, no installation required. Fast, secure and privacy-friendly.',
+      metaTitle: 'Video Converter Online \u2013 MP4, MOV, AVI, WebM up to 5 GB | KodiniTools',
+      metaDescription: 'Free online video converter: MOV to MP4, AVI to MP4, WebM to MP4, MKV, FLV, WMV and TS. Large files up to 5 GB, no installation and no registration.',
       metaTitleConverter: 'Convert Video \u2013 Free Online Video Converter',
       metaDescriptionConverter: 'Convert your video now: upload file, choose format and quality, done. MP4, WebM, AVI, MOV, MKV, TS. Up to 5 GB, free and no registration.'
     }

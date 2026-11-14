@@ -58,7 +58,7 @@ describe('Sprach-URL ?lang', () => {
     assert.equal(AppI18n.getLocale(), 'en');
     assert.equal(storage.get('locale'), 'en');
     assert.equal(document.documentElement.lang, 'en');
-    assert.match(document.title, /^Free Online Video Converter/);
+    assert.match(document.title, /^Video Converter Online/);
     assert.equal(head['link[rel="canonical"]'].attrs.href, `${PAGES['index.html']}?lang=en`);
     assert.equal(head['meta[property="og:url"]'].attrs.content, `${PAGES['index.html']}?lang=en`);
   });
