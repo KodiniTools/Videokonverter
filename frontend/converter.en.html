@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert Video – Free Online Video Converter</title>
+    <meta name="description" content="Convert your video now: upload file, choose format and quality, done. MP4, WebM, AVI, MOV, MKV, TS. Up to 5 GB, free and no registration.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://kodinitools.com/videokonverter/converter.html?lang=en">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Convert Video – Free Online Video Converter">
+    <meta property="og:description" content="Convert your video now: upload file, choose format and quality, done. MP4, WebM, AVI, MOV, MKV, TS. Up to 5 GB, free and no registration.">
+    <meta property="og:url" content="https://kodinitools.com/videokonverter/converter.html?lang=en">
+    <meta property="og:site_name" content="KodiniTools">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="de_DE">
+    <meta property="og:image" content="https://kodinitools.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Video Converter – Kostenlos online Videos konvertieren">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Convert Video – Free Online Video Converter">
+    <meta name="twitter:description" content="Convert your video now: upload file, choose format and quality, done. MP4, WebM, AVI, MOV, MKV, TS. Up to 5 GB, free and no registration.">
+    <meta name="twitter:image" content="https://kodinitools.com/og-image.jpg">
+    <meta name="twitter:image:alt" content="Video Converter Tool">
+
+    <!-- Alternate Languages -->
+    <link rel="alternate" hreflang="de" href="https://kodinitools.com/videokonverter/converter.html">
+    <link rel="alternate" hreflang="en" href="https://kodinitools.com/videokonverter/converter.html?lang=en">
+    <link rel="alternate" hreflang="x-default" href="https://kodinitools.com/videokonverter/converter.html">
+
+    <!-- Favicon (aus dem Server-Public-Ordner: /var/www/kodinitools.com/public) -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/favicon.ico">
+    <meta name="theme-color" content="#f6f5f1" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0a1324" media="(prefers-color-scheme: dark)">
+    <!-- Theme vor dem ersten Paint setzen (Tokens: Dark auf :root, Light über data-theme),
+         damit Light-Nutzer keinen dunklen Flash sehen. js/theme.js übernimmt danach. -->
+    <script>
+      try {
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') === 'dark' ? 'dark' : 'light');
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    </script>
+
+    <link rel="stylesheet" href="/fontawesome/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="/fontawesome/css/solid.min.css" />
+    <link rel="stylesheet" href="/videokonverter/css/tokens-v2.css" />
+    <link rel="stylesheet" href="/videokonverter/css/app.css" />
+  </head>
+  <body>
+    <!--#include virtual="/partials/nav.html" -->
+
+    <div id="app" class="converter-page">
+      <main class="main">
+        <a href="/videokonverter/" class="home-link" data-i18n-title="backToHome">
+          <svg class="home-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span class="home-link-text" data-i18n="backToHome">Zur Startseite</span>
+        </a>
+
+        <div id="connection-status" class="connection-status">
+          <span class="status-dot"></span>
+          <span id="connection-text" data-i18n="disconnected">Getrennt</span>
+        </div>
+
+        <!-- File Uploader -->
+        <div class="uploader-container">
+          <div id="drop-zone" class="drop-zone">
+            <div class="drop-zone-content">
+              <div id="upload-button" class="upload-button">
+                <svg id="upload-icon-default" class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <svg id="upload-icon-spinner" class="upload-icon spinning" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="display:none">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h3 id="drop-zone-title" data-i18n="dropFilesHere">Videodateien hier ablegen</h3>
+              <p data-i18n="orClickToBrowse">oder klicken zum Durchsuchen</p>
+              <p class="formats" data-i18n="supportedFormats">Unterstützt: MP4, WebM, AVI, MOV, MKV, FLV, WMV, TS (Max: 5 GB)</p>
+            </div>
+            <input id="file-input" type="file" accept=".mp4,.webm,.avi,.mov,.mkv,.flv,.wmv,.ts" multiple style="display:none" />
+          </div>
+          <div id="upload-error" class="error-message" style="display:none"></div>
+        </div>
+
+        <!-- Conversion Queue -->
+        <div id="conversion-queue" class="conversion-queue" style="display:none">
+          <h2 data-i18n="conversionQueue">Konvertierungswarteschlange</h2>
+          <div id="queue-list" class="queue-list"></div>
+        </div>
+      </main>
+    </div>
+
+    <!--#include virtual="/partials/footer.html" -->
+    <!--#include virtual="/partials/cookie-banner.html" -->
+    <script src="/videokonverter/js/theme.js"></script>
+    <script src="/videokonverter/js/i18n.js"></script>
+    <script src="/videokonverter/js/converter.js"></script>
+  </body>
+</html>

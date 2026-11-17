@@ -12,6 +12,7 @@
     "start": "npm run start --prefix backend",
     "test": "npm run test --prefix backend && npm run test:frontend",
     "test:frontend": "node --test 'frontend/tests/*.test.mjs'",
+    "build:en": "node scripts/build-en-pages.mjs",
     "lint": "npm run lint --prefix backend",
     "lint:fix": "npm run lint:fix --prefix backend",
     "format": "npm run format --prefix backend"
