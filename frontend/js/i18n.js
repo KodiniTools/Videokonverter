@@ -49,7 +49,7 @@
 
       // SEO Meta
       metaTitle: 'Video konvertieren online \u2013 MP4, MOV, AVI, WebM bis 5 GB | KodiniTools',
-      metaDescription: 'Video konvertieren online und kostenlos: MOV in MP4, AVI in MP4, WebM in MP4, MKV, FLV, WMV und TS. Grosse Dateien bis 5 GB, ohne Installation und Anmeldung.',
+      metaDescription: 'Video konvertieren online und kostenlos: MOV in MP4, AVI in MP4, WebM in MP4, MKV, FLV, WMV und TS. Große Dateien bis 5 GB, ohne Installation und Anmeldung.',
       metaTitleConverter: 'Video konvertieren \u2013 Kostenloser Online Video Converter',
       metaDescriptionConverter: 'Video jetzt konvertieren: Datei hochladen, Format und Qualit\u00e4t w\u00e4hlen, fertig. MP4, WebM, AVI, MOV, MKV, TS. Bis zu 5 GB, kostenlos und ohne Anmeldung.'
     },
