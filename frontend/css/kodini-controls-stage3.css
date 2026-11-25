@@ -72,11 +72,13 @@
 
 .converter-page :is(.btn-convert, .btn-download) {
   background: var(--video-gold);
+  background-image: var(--video-gold-grad);
   color: #fff;
 }
 
 .converter-page :is(.btn-convert, .btn-download):hover:not(:disabled) {
   background: var(--video-gold-hover);
+  background-image: var(--video-gold-grad-hover);
 }
 
 .converter-page :is(.format-buttons, .item-actions) button:focus-visible {

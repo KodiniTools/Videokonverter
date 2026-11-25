@@ -1,11 +1,19 @@
 /* Grundlayout für den Video-Konverter. Die globale SSI-Navigation bleibt separat. */
+:root {
+  /* Gold auf :root, damit auch die globale Navigation dieselben Werte nutzt.
+     KodiniTools-Standard für gefüllte Buttons: dreistufiger Goldverlauf,
+     oberster Stopp #9c6c26 hat 4,58:1 zu Weiß. */
+  --video-gold: #8f6320;
+  --video-gold-hover: #7d561c;
+  --video-gold-grad: linear-gradient(180deg, #9c6c26 0%, #7a5218 45%, #4a2f0a 100%);
+  --video-gold-grad-hover: linear-gradient(180deg, #8c5f1f 0%, #6a4614 45%, #402908 100%);
+}
+
 :is(.landing, .converter-page) {
   --ds-weight-medium: 400;
   --ds-weight-semibold: 400;
   --ds-weight-bold: 400;
   --video-glow: color-mix(in srgb, #2089be 29%, var(--ds-surface-0));
-  --video-gold: #79521e;
-  --video-gold-hover: #684419;
   --video-highlight: #e6bf75;
   --video-content-width: 1160px;
   --video-gutter: clamp(1rem, 3vw, 2rem);
@@ -69,11 +77,13 @@
 
 .landing .hero-cta {
   background: var(--video-gold);
+  background-image: var(--video-gold-grad);
   color: #fff;
 }
 
 .landing .hero-cta:hover {
   background: var(--video-gold-hover);
+  background-image: var(--video-gold-grad-hover);
 }
 
 .video-hero-image {
