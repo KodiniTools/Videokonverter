@@ -125,15 +125,22 @@
     <link rel="stylesheet" href="/fontawesome/css/solid.min.css" />
     <link rel="stylesheet" href="/videokonverter/css/tokens-v2.css" />
     <link rel="stylesheet" href="/videokonverter/css/app.css" />
+    <link rel="stylesheet" href="/videokonverter/css/kodini-layout-stage1.css" />
   </head>
   <body>
     <!--#include virtual="/partials/nav.html" -->
 
-    <div id="app" class="landing">
+    <main id="app" class="landing">
+      <nav class="video-section-nav" aria-label="Video-Konverter">
+        <a href="/videokonverter/" aria-current="page" data-i18n="sectionHome">Startseite</a>
+        <a href="/videokonverter/app/" data-i18n="sectionApp">Konverter</a>
+      </nav>
+
       <!-- Hero Section -->
       <section class="hero">
         <div class="hero-content">
           <h1 class="hero-title" data-i18n="heroTitle">Video konvertieren online</h1>
+          <p class="video-hero-lead" data-i18n="heroLead">Videos ins passende Format bringen</p>
           <p class="hero-subtitle" data-i18n="heroSubtitle">Konvertieren Sie Ihre Videos schnell und einfach in verschiedene Formate - direkt im Browser, kostenlos und ohne Installation.</p>
           <div class="hero-formats">
             <span class="format-tag">MP4</span>
@@ -145,17 +152,22 @@
             <span class="format-tag">WMV</span>
             <span class="format-tag">TS</span>
           </div>
-          <a href="/videokonverter/converter.html" class="hero-cta">
+          <a href="/videokonverter/app/" class="hero-cta">
             <span data-i18n="heroCta">Jetzt starten</span>
             <svg class="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14M12 5l7 7-7 7"/>
             </svg>
           </a>
         </div>
+        <img class="video-hero-image" src="/videokonverter/images/video-konverter-hero.webp"
+          width="1120" height="630" fetchpriority="high" decoding="async"
+          alt="Alpiner Bergsee im Videobild mit Schnittzeitleiste und Formatwechsel von MOV zu MP4"
+          data-i18n-alt="heroImageAlt" />
       </section>
 
       <!-- Features Grid -->
       <section class="features">
+        <h2 class="video-section-title" data-i18n="featuresHeading">Funktionen</h2>
         <div class="features-grid">
           <article class="feature-card">
             <h3 class="feature-title" data-i18n="feature1Title">Blitzschnelle Konvertierung</h3>
@@ -173,7 +185,18 @@
           </article>
         </div>
       </section>
-    </div>
+      <section class="video-faq">
+        <h2 data-i18n="faqHeading">Häufige Fragen</h2>
+        <details>
+          <summary data-i18n="faqUploadQuestion">Welche Videos kann ich hochladen?</summary>
+          <p data-i18n="faqUploadAnswer">MP4, WebM, AVI, MOV, MKV, FLV, WMV und TS mit bis zu 5 GB pro Datei.</p>
+        </details>
+        <details>
+          <summary data-i18n="faqServerQuestion">Wo werden Videos konvertiert?</summary>
+          <p data-i18n="faqServerAnswer">Die Videos werden zur Konvertierung auf den Server hochgeladen und dort mit FFmpeg verarbeitet.</p>
+        </details>
+      </section>
+    </main>
 
     <!--#include virtual="/partials/footer.html" -->
     <!--#include virtual="/partials/cookie-banner.html" -->

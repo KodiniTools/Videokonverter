@@ -3,6 +3,17 @@
 
   var translations = {
     de: {
+      sectionHome: 'Startseite',
+      sectionApp: 'Konverter',
+      appHeading: 'Video-Konverter',
+      heroLead: 'Videos ins passende Format bringen',
+      heroImageAlt: 'Alpiner Bergsee im Videobild mit Schnittzeitleiste und Formatwechsel von MOV zu MP4',
+      featuresHeading: 'Funktionen',
+      faqHeading: 'Häufige Fragen',
+      faqUploadQuestion: 'Welche Videos kann ich hochladen?',
+      faqUploadAnswer: 'MP4, WebM, AVI, MOV, MKV, FLV, WMV und TS mit bis zu 5 GB pro Datei.',
+      faqServerQuestion: 'Wo werden Videos konvertiert?',
+      faqServerAnswer: 'Die Videos werden zur Konvertierung auf den Server hochgeladen und dort mit FFmpeg verarbeitet.',
       heroTitle: 'Video konvertieren online',
       heroSubtitle: 'Konvertieren Sie Ihre Videos schnell und einfach in verschiedene Formate - direkt im Browser, kostenlos und ohne Installation.',
       heroCta: 'Jetzt starten',
@@ -54,6 +65,17 @@
       metaDescriptionConverter: 'Video jetzt konvertieren: Datei hochladen, Format und Qualit\u00e4t w\u00e4hlen, fertig. MP4, WebM, AVI, MOV, MKV, TS. Bis zu 5 GB, kostenlos und ohne Anmeldung.'
     },
     en: {
+      sectionHome: 'Home',
+      sectionApp: 'Converter',
+      appHeading: 'Video Converter',
+      heroLead: 'Put your videos in the right format',
+      heroImageAlt: 'Alpine lake video frame with an editing timeline and a MOV to MP4 conversion',
+      featuresHeading: 'Features',
+      faqHeading: 'Frequently asked questions',
+      faqUploadQuestion: 'Which video formats can I upload?',
+      faqUploadAnswer: 'MP4, WebM, AVI, MOV, MKV, FLV, WMV and TS up to 5 GB per file.',
+      faqServerQuestion: 'Where are videos converted?',
+      faqServerAnswer: 'Videos are uploaded to the server and converted there with FFmpeg.',
       heroTitle: 'Video Converter Online',
       heroSubtitle: 'Convert your videos quickly and easily to various formats - directly in your browser, free and without installation.',
       heroCta: 'Get Started',
@@ -158,10 +180,13 @@
       var titleKey = titleElements[j].getAttribute('data-i18n-title');
       titleElements[j].setAttribute('title', t(titleKey));
     }
+    document.querySelectorAll('[data-i18n-alt]').forEach(function (element) {
+      element.setAttribute('alt', t(element.getAttribute('data-i18n-alt')));
+    });
     document.documentElement.lang = currentLocale;
 
     // Update <title> and <meta> tags for SEO i18n sync
-    var isConverterPage = location.pathname.indexOf('converter') !== -1;
+    var isConverterPage = /\/(?:app(?:\/index(?:\.en)?\.html)?\/?|converter(?:\.en)?\.html)$/.test(location.pathname);
     document.title = t(isConverterPage ? 'metaTitleConverter' : 'metaTitle');
 
     var descMeta = document.querySelector('meta[name="description"]');

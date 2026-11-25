@@ -11,7 +11,7 @@ import { readFrontend } from './tokenTestUtils.mjs';
 const i18nJs = readFrontend('js/i18n.js');
 const PAGES = {
   'index.html': 'https://kodinitools.com/videokonverter/',
-  'converter.html': 'https://kodinitools.com/videokonverter/converter.html',
+  'converter.html': 'https://kodinitools.com/videokonverter/app/',
 };
 
 /** Minimaler Browser-Kontext: nur was i18n.js anfasst. */

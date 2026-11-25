@@ -25,7 +25,7 @@ export const PAGES = [
   { file: 'index.html', url: SITE_URL, title: 'metaTitle', description: 'metaDescription' },
   {
     file: 'converter.html',
-    url: `${SITE_URL}converter.html`,
+    url: `${SITE_URL}app/`,
     title: 'metaTitleConverter',
     description: 'metaDescriptionConverter',
   },
@@ -70,7 +70,12 @@ export function buildEnPage(page) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   for (const page of PAGES) {
     const target = enFileName(page.file);
-    writeFileSync(new URL(target, FRONTEND), buildEnPage(page));
+    const english = buildEnPage(page);
+    writeFileSync(new URL(target, FRONTEND), english);
+    if (page.file === 'converter.html') {
+      writeFileSync(new URL('app/index.html', FRONTEND), read(page.file));
+      writeFileSync(new URL('app/index.en.html', FRONTEND), english);
+    }
     console.log(`frontend/${target} geschrieben`);
   }
 }

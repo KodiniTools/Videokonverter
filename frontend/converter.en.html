@@ -6,13 +6,13 @@
     <title>Convert Video – Free Online Video Converter</title>
     <meta name="description" content="Convert your video now: upload file, choose format and quality, done. MP4, WebM, AVI, MOV, MKV, TS. Up to 5 GB, free and no registration.">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://kodinitools.com/videokonverter/converter.html?lang=en">
+    <link rel="canonical" href="https://kodinitools.com/videokonverter/app/?lang=en">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Convert Video – Free Online Video Converter">
     <meta property="og:description" content="Convert your video now: upload file, choose format and quality, done. MP4, WebM, AVI, MOV, MKV, TS. Up to 5 GB, free and no registration.">
-    <meta property="og:url" content="https://kodinitools.com/videokonverter/converter.html?lang=en">
+    <meta property="og:url" content="https://kodinitools.com/videokonverter/app/?lang=en">
     <meta property="og:site_name" content="KodiniTools">
     <meta property="og:locale" content="en_US">
     <meta property="og:locale:alternate" content="de_DE">
@@ -29,9 +29,9 @@
     <meta name="twitter:image:alt" content="Video Converter Tool">
 
     <!-- Alternate Languages -->
-    <link rel="alternate" hreflang="de" href="https://kodinitools.com/videokonverter/converter.html">
-    <link rel="alternate" hreflang="en" href="https://kodinitools.com/videokonverter/converter.html?lang=en">
-    <link rel="alternate" hreflang="x-default" href="https://kodinitools.com/videokonverter/converter.html">
+    <link rel="alternate" hreflang="de" href="https://kodinitools.com/videokonverter/app/">
+    <link rel="alternate" hreflang="en" href="https://kodinitools.com/videokonverter/app/?lang=en">
+    <link rel="alternate" hreflang="x-default" href="https://kodinitools.com/videokonverter/app/">
 
     <!-- Favicon (aus dem Server-Public-Ordner: /var/www/kodinitools.com/public) -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -53,18 +53,18 @@
     <link rel="stylesheet" href="/fontawesome/css/solid.min.css" />
     <link rel="stylesheet" href="/videokonverter/css/tokens-v2.css" />
     <link rel="stylesheet" href="/videokonverter/css/app.css" />
+    <link rel="stylesheet" href="/videokonverter/css/kodini-layout-stage1.css" />
   </head>
   <body>
     <!--#include virtual="/partials/nav.html" -->
 
     <div id="app" class="converter-page">
+      <nav class="video-section-nav" aria-label="Video-Konverter">
+        <a href="/videokonverter/" data-i18n="sectionHome">Startseite</a>
+        <a href="/videokonverter/app/" aria-current="page" data-i18n="sectionApp">Konverter</a>
+      </nav>
       <main class="main">
-        <a href="/videokonverter/" class="home-link" data-i18n-title="backToHome">
-          <svg class="home-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7"/>
-          </svg>
-          <span class="home-link-text" data-i18n="backToHome">Zur Startseite</span>
-        </a>
+        <h1 class="video-app-title" data-i18n="appHeading">Video-Konverter</h1>
 
         <div id="connection-status" class="connection-status">
           <span class="status-dot"></span>
