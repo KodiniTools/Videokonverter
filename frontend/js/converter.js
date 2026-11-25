@@ -434,6 +434,19 @@
     return job.fileName.replace(/\.[^.]+$/, '') + '.' + job.targetFormat;
   }
 
+  /** renderJob ersetzt die Buttons; der Tastaturfokus bleibt auf der neuen Auswahl. */
+  function refocusSelection(jobId, attribute, value) {
+    var el = document.getElementById('job-' + jobId);
+    if (!el) return;
+    var buttons = el.querySelectorAll('button[' + attribute + ']');
+    for (var i = 0; i < buttons.length; i++) {
+      if (buttons[i].getAttribute(attribute) === value) {
+        buttons[i].focus();
+        return;
+      }
+    }
+  }
+
   function renderJob(job) {
     var el = document.getElementById('job-' + job.id);
     if (!el) {
@@ -520,6 +533,8 @@
       for (var f = 0; f < formats.length; f++) {
         var fBtn = document.createElement('button');
         fBtn.className = 'fmt-btn' + (job.selectedFormat === formats[f].value ? ' active' : '');
+        fBtn.type = 'button';
+        fBtn.setAttribute('aria-pressed', String(job.selectedFormat === formats[f].value));
         fBtn.dataset.job = job.id;
         fBtn.dataset.format = formats[f].value;
         fBtn.textContent = formats[f].label;
@@ -548,6 +563,8 @@
       for (var q = 0; q < qualities.length; q++) {
         var qBtn = document.createElement('button');
         qBtn.className = 'qual-btn' + (job.selectedQuality === qualities[q].value ? ' active' : '');
+        qBtn.type = 'button';
+        qBtn.setAttribute('aria-pressed', String(job.selectedQuality === qualities[q].value));
         qBtn.dataset.job = job.id;
         qBtn.dataset.quality = qualities[q].value;
         qBtn.textContent = t(qualities[q].key);
@@ -576,6 +593,7 @@
       var convertBtn = document.createElement('button');
       convertBtn.className = 'btn-convert';
       convertBtn.dataset.action = 'convert';
+      convertBtn.type = 'button';
       convertBtn.dataset.job = job.id;
       var convertSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       convertSvg.setAttribute('class', 'btn-icon');
@@ -597,6 +615,7 @@
       var downloadBtn = document.createElement('button');
       downloadBtn.className = 'btn-download';
       downloadBtn.dataset.action = 'download';
+      downloadBtn.type = 'button';
       downloadBtn.dataset.job = job.id;
       var downloadSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       downloadSvg.setAttribute('class', 'btn-icon');
@@ -616,6 +635,7 @@
     var removeBtn = document.createElement('button');
     removeBtn.className = 'btn-remove';
     removeBtn.dataset.action = 'remove';
+    removeBtn.type = 'button';
     removeBtn.dataset.job = job.id;
     var removeSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     removeSvg.setAttribute('class', 'btn-icon');
@@ -706,12 +726,14 @@
       if (job) {
         job.selectedFormat = format;
         renderJob(job);
+        refocusSelection(jobId, 'data-format', format);
       }
     } else if (quality) {
       var qJob = findJob(jobId);
       if (qJob) {
         qJob.selectedQuality = quality;
         renderJob(qJob);
+        refocusSelection(jobId, 'data-quality', quality);
       }
     }
   });
