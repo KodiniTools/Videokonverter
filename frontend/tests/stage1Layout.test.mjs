@@ -225,3 +225,17 @@ describe('Etappe 5: Abschlussprüfung', () => {
     assert.match(i18nJs, /og:locale:alternate/);
   });
 });
+
+describe('Texte zur Verarbeitung', () => {
+  it('behauptet keine Konvertierung im Browser (läuft auf dem Server)', () => {
+    for (const [name, source] of [
+      ['index.html', landing],
+      ['converter.html', converter],
+      ['js/i18n.js', i18nJs],
+    ]) {
+      assert.doesNotMatch(source, /im Browser|in (?:your|the) browser/i, name);
+    }
+    assert.match(i18nJs, /heroSubtitle: '[^']*auf unserem Server/);
+    assert.match(i18nJs, /heroSubtitle: '[^']*on our server/);
+  });
+});
