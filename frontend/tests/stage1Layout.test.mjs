@@ -116,3 +116,57 @@ describe('Etappe 2: Werkzeugkopf', () => {
     });
   }
 });
+
+describe('Etappe 3: Werkzeugoberfläche', () => {
+  const css = readFrontend('css/kodini-app-stage3.css');
+  const converterJs = readFrontend('js/converter.js');
+
+  it('nur das Werkzeug lädt kodini-app-stage3.css', () => {
+    assert.match(converter, /href="\/videokonverter\/css\/kodini-app-stage3\.css"/);
+    assert.doesNotMatch(landing, /kodini-app-stage3\.css/);
+  });
+
+  it('Konvertieren und Herunterladen sind dunkelgold mit weisser Schrift', () => {
+    const rule =
+      css.match(
+        /\.converter-page \.btn-convert,\s*\.converter-page \.btn-download \{([^}]*)\}/
+      )?.[1] ?? '';
+    assert.match(rule, /background: var\(--video-gold\);/);
+    assert.match(rule, /color: #fff;/);
+  });
+
+  it('Dunkelgold erreicht mit Weiss WCAG AA (4.5:1), auch im Hover', () => {
+    const layout = readFrontend('css/kodini-layout-stage1.css');
+    const luminance = (hex) => {
+      const [r, g, b] = hex.match(/\w\w/g).map((c) => {
+        const v = parseInt(c, 16) / 255;
+        return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    for (const name of ['--video-gold', '--video-gold-hover']) {
+      const hex = layout.match(new RegExp(`${name}: (#[0-9a-f]{6});`, 'i'))?.[1];
+      assert.ok(hex, name);
+      assert.ok(1.05 / (luminance(hex) + 0.05) >= 4.5, `${name} ${hex}`);
+    }
+  });
+
+  it('aktive Auswahl ist golden unterstrichen, Drag-over golden hervorgehoben', () => {
+    assert.match(
+      css,
+      /\.format-buttons button\.active \{[^}]*box-shadow: inset 0 -3px var\(--video-highlight\);/
+    );
+    assert.match(css, /\.drop-zone\.drag-over \{[^}]*border-color: var\(--video-highlight\);/);
+  });
+
+  it('Aktionsbuttons: mindestens 44 px hoch und sichtbarer Tastaturfokus', () => {
+    assert.match(css, /\.item-actions button \{[^}]*min-height: 44px;/);
+    assert.match(css, /:focus-visible \{[^}]*outline: 2px solid var\(--video-highlight\);/);
+  });
+
+  it('Auswahlbuttons melden ihren Zustand (aria-pressed) und behalten den Fokus', () => {
+    assert.equal((converterJs.match(/setAttribute\('aria-pressed'/g) ?? []).length, 2);
+    assert.match(converterJs, /refocusSelection\(jobId, 'data-format', format\)/);
+    assert.match(converterJs, /refocusSelection\(jobId, 'data-quality', quality\)/);
+  });
+});
