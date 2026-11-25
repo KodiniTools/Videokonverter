@@ -89,3 +89,30 @@ describe('Übersetzungen', () => {
     });
   }
 });
+
+describe('Etappe 2: Werkzeugkopf', () => {
+  for (const [name, source] of [
+    ['Landingpage', landing],
+    ['Werkzeug', converter],
+  ]) {
+    it(`${name} hat den gemeinsamen Kopf mit verstecktem Theme-Schalter`, () => {
+      const header =
+        source.match(/<header class="video-section-header">[\s\S]*?<\/header>/)?.[0] ?? '';
+      assert.match(header, /<nav class="video-section-nav" aria-labelledby="video-section-name">/);
+      assert.match(
+        header,
+        /<button class="video-theme-button" id="video-theme-button" type="button" hidden>/
+      );
+      assert.match(
+        source,
+        /<link rel="stylesheet" href="\/videokonverter\/css\/kodini-header-stage2\.css" \/>/
+      );
+    });
+
+    it(`${name} lädt kodini-header.js nach i18n.js`, () => {
+      const i18n = source.indexOf('/videokonverter/js/i18n.js');
+      const header = source.indexOf('/videokonverter/js/kodini-header.js');
+      assert.ok(i18n > -1 && header > i18n);
+    });
+  }
+});
