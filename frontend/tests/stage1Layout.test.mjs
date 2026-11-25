@@ -189,3 +189,39 @@ describe('Etappe 4: Arbeitsbereich', () => {
     assert.match(css, /\.progress-bar \{[^}]*height: 8px;/);
   });
 });
+
+describe('Etappe 5: Abschlussprüfung', () => {
+  it('Dateiauswahl ist ein per Tastatur erreichbarer Button', () => {
+    assert.match(
+      converter,
+      /<button id="upload-button" class="upload-button" type="button" aria-labelledby="drop-zone-title">/
+    );
+    assert.match(
+      readFrontend('css/kodini-controls-stage3.css'),
+      /\.upload-button:focus-visible \{[^}]*outline: 2px solid/
+    );
+  });
+
+  it('Warteschlange erzwingt eine schrumpfbare Spalte (lange Dateinamen)', () => {
+    assert.match(
+      readFrontend('css/kodini-workspace-stage4.css'),
+      /\.queue-list \{[^}]*grid-template-columns: minmax\(0, 1fr\);/
+    );
+  });
+
+  it('Teilen-Metadaten nutzen Titel und Beschreibung der jeweiligen Seite', () => {
+    for (const name of ['ogTitle', 'twTitle']) {
+      assert.match(
+        i18nJs,
+        new RegExp(`${name}\\) ${name}\\.setAttribute\\('content', pageTitle\\)`)
+      );
+    }
+    for (const name of ['ogDesc', 'twDesc']) {
+      assert.match(
+        i18nJs,
+        new RegExp(`${name}\\) ${name}\\.setAttribute\\('content', pageDescription\\)`)
+      );
+    }
+    assert.match(i18nJs, /og:locale:alternate/);
+  });
+});
