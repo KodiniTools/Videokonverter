@@ -126,15 +126,24 @@
     <link rel="stylesheet" href="/videokonverter/css/tokens-v2.css" />
     <link rel="stylesheet" href="/videokonverter/css/app.css" />
     <link rel="stylesheet" href="/videokonverter/css/kodini-layout-stage1.css" />
+    <link rel="stylesheet" href="/videokonverter/css/kodini-header-stage2.css" />
   </head>
   <body>
     <!--#include virtual="/partials/nav.html" -->
 
     <main id="app" class="landing">
-      <nav class="video-section-nav" aria-label="Video-Konverter">
-        <a href="/videokonverter/" aria-current="page" data-i18n="sectionHome">Startseite</a>
-        <a href="/videokonverter/app/" data-i18n="sectionApp">Konverter</a>
-      </nav>
+      <header class="video-section-header">
+        <div class="video-section-header-inner">
+          <span id="video-section-name" class="video-section-name" data-i18n="appHeading">Video-Konverter</span>
+          <nav class="video-section-nav" aria-labelledby="video-section-name">
+            <a href="/videokonverter/" aria-current="page" data-i18n="sectionHome">Startseite</a>
+            <a href="/videokonverter/app/" data-i18n="sectionApp">Konverter</a>
+          </nav>
+          <button class="video-theme-button" id="video-theme-button" type="button" hidden>
+            <span id="video-theme-label"></span>
+          </button>
+        </div>
+      </header>
 
       <!-- Hero Section -->
       <section class="hero">
@@ -202,5 +211,6 @@
     <!--#include virtual="/partials/cookie-banner.html" -->
     <script src="/videokonverter/js/theme.js"></script>
     <script src="/videokonverter/js/i18n.js"></script>
+    <script src="/videokonverter/js/kodini-header.js"></script>
   </body>
 </html>
