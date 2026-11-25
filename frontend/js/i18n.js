@@ -187,18 +187,20 @@
 
     // Update <title> and <meta> tags for SEO i18n sync
     var isConverterPage = /\/(?:app(?:\/index(?:\.en)?\.html)?\/?|converter(?:\.en)?\.html)$/.test(location.pathname);
-    document.title = t(isConverterPage ? 'metaTitleConverter' : 'metaTitle');
+    var pageTitle = t(isConverterPage ? 'metaTitleConverter' : 'metaTitle');
+    var pageDescription = t(isConverterPage ? 'metaDescriptionConverter' : 'metaDescription');
+    document.title = pageTitle;
 
     var descMeta = document.querySelector('meta[name="description"]');
     if (descMeta) {
-      descMeta.setAttribute('content', t(isConverterPage ? 'metaDescriptionConverter' : 'metaDescription'));
+      descMeta.setAttribute('content', pageDescription);
     }
 
     // Update Open Graph tags if present
     var ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute('content', t('metaTitle'));
+    if (ogTitle) ogTitle.setAttribute('content', pageTitle);
     var ogDesc = document.querySelector('meta[property="og:description"]');
-    if (ogDesc) ogDesc.setAttribute('content', t('metaDescription'));
+    if (ogDesc) ogDesc.setAttribute('content', pageDescription);
     // Canonical und og:url je Sprache (hreflang steht statisch im HTML)
     if (pageUrl) {
       canonicalEl.setAttribute('href', localizedUrl(currentLocale));
@@ -208,11 +210,14 @@
     var ogLocale = document.querySelector('meta[property="og:locale"]');
     if (ogLocale) ogLocale.setAttribute('content', currentLocale === 'de' ? 'de_DE' : 'en_US');
 
+    var ogAlternateLocale = document.querySelector('meta[property="og:locale:alternate"]');
+    if (ogAlternateLocale) ogAlternateLocale.setAttribute('content', currentLocale === 'de' ? 'en_US' : 'de_DE');
+
     // Update Twitter tags if present
     var twTitle = document.querySelector('meta[name="twitter:title"]');
-    if (twTitle) twTitle.setAttribute('content', t('metaTitle'));
+    if (twTitle) twTitle.setAttribute('content', pageTitle);
     var twDesc = document.querySelector('meta[name="twitter:description"]');
-    if (twDesc) twDesc.setAttribute('content', t('metaDescription'));
+    if (twDesc) twDesc.setAttribute('content', pageDescription);
 
     // Notify dynamically rendered UI (e.g. the conversion queue) so it can
     // re-render its texts in the new locale.

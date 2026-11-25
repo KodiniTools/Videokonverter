@@ -29,6 +29,7 @@
 }
 
 .converter-page .queue-list {
+  grid-template-columns: minmax(0, 1fr);
   display: grid;
   gap: var(--ds-space-3);
 }

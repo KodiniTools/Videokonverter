@@ -89,3 +89,12 @@
     animation: none;
   }
 }
+
+.converter-page .upload-button {
+  cursor: inherit;
+}
+
+.converter-page .upload-button:focus-visible {
+  outline: 2px solid var(--video-highlight);
+  outline-offset: 3px;
+}
