@@ -132,7 +132,54 @@ describe('Etappe 3: Bedienelemente', () => {
     const rule =
       css.match(/\.converter-page :is\(\.btn-convert, \.btn-download\) \{([^}]*)\}/)?.[1] ?? '';
     assert.match(rule, /background: var\(--video-gold\);/);
+    assert.match(rule, /background-image: var\(--video-gold-grad\);/);
     assert.match(rule, /color: #fff;/);
+    const hover =
+      css.match(
+        /\.converter-page :is\(\.btn-convert, \.btn-download\):hover:not\(:disabled\) \{([^}]*)\}/
+      )?.[1] ?? '';
+    assert.match(hover, /background-image: var\(--video-gold-grad-hover\);/);
+  });
+
+  it('Jetzt starten trägt den Goldverlauf, auch im Hover', () => {
+    const layout = readFrontend('css/kodini-layout-stage1.css');
+    assert.match(layout, /\.landing \.hero-cta \{[^}]*background-image: var\(--video-gold-grad\);/);
+    assert.match(
+      layout,
+      /\.landing \.hero-cta:hover \{[^}]*background-image: var\(--video-gold-grad-hover\);/
+    );
+  });
+
+  it('aktive Sprache der globalen Navigation trägt den Goldverlauf', () => {
+    const header = readFrontend('css/kodini-header-stage2.css');
+    assert.match(
+      header,
+      /\.global-nav-lang-btn\.active \{[^}]*background-image: var\(--video-gold-grad\) !important;/
+    );
+    assert.match(
+      header,
+      /\.global-nav-lang-btn\.active:hover \{[^}]*background-image: var\(--video-gold-grad-hover\) !important;/
+    );
+  });
+
+  it('Goldverlauf: 180deg, drei Stopps, jeder mit Weiss WCAG AA (4.5:1)', () => {
+    const layout = readFrontend('css/kodini-layout-stage1.css');
+    const luminance = (hex) => {
+      const [r, g, b] = hex.match(/\w\w/g).map((c) => {
+        const v = parseInt(c, 16) / 255;
+        return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    for (const name of ['--video-gold-grad', '--video-gold-grad-hover']) {
+      const value = layout.match(new RegExp(`${name}: ([^;]+);`))?.[1] ?? '';
+      assert.match(value, /^linear-gradient\(180deg,/, name);
+      const stops = value.match(/#[0-9a-f]{6}/gi) ?? [];
+      assert.equal(stops.length, 3, name);
+      for (const hex of stops) {
+        assert.ok(1.05 / (luminance(hex.slice(1)) + 0.05) >= 4.5, `${name} ${hex}`);
+      }
+    }
   });
 
   it('Dunkelgold erreicht mit Weiss WCAG AA (4.5:1), auch im Hover', () => {

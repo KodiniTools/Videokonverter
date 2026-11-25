@@ -74,3 +74,16 @@
     flex-basis: 100%;
   }
 }
+
+/* Aktive Sprache der globalen SSI-Navigation: Goldverlauf mit weißer Schrift
+   wie die Hauptbuttons (Tokens auf :root in kodini-layout-stage1.css). */
+html body > nav.global-nav .global-nav-lang-btn.active {
+  background-color: var(--video-gold) !important;
+  background-image: var(--video-gold-grad) !important;
+  color: #fff !important;
+}
+
+html body > nav.global-nav .global-nav-lang-btn.active:hover {
+  background-color: var(--video-gold-hover) !important;
+  background-image: var(--video-gold-grad-hover) !important;
+}
