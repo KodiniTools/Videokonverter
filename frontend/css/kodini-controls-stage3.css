@@ -1,0 +1,91 @@
+/* Bedienelemente der Werkzeugseite. Zustandsklassen stammen aus converter.js. */
+.converter-page .drop-zone {
+  padding: clamp(1.5rem, 5vw, 3rem) clamp(0.75rem, 3vw, 1.5rem);
+  border-width: 2px;
+  background: var(--ds-surface-1);
+  background: linear-gradient(
+    145deg,
+    var(--ds-surface-1),
+    color-mix(in srgb, var(--ds-surface-1) 70%, var(--video-glow))
+  );
+}
+
+.converter-page .drop-zone:hover {
+  border-color: var(--video-highlight);
+}
+
+.converter-page .drop-zone.drag-over {
+  border-color: var(--video-highlight);
+  background: var(--ds-accent-soft);
+}
+
+.converter-page .upload-button {
+  border-radius: var(--ds-radius-lg);
+  border-color: var(--ds-border-strong);
+  color: var(--video-highlight);
+}
+
+.converter-page .drop-zone:is(:hover, .drag-over) .upload-button {
+  border-color: var(--video-highlight);
+  color: var(--video-highlight);
+}
+
+.converter-page .drop-zone h3 {
+  font-size: clamp(1.125rem, 2.7vw, 1.375rem);
+}
+
+.converter-page .drop-zone .formats {
+  color: var(--ds-text-2);
+  overflow-wrap: anywhere;
+}
+
+.converter-page .format-selection {
+  border: var(--ds-border-width) solid var(--ds-border);
+  border-radius: var(--ds-radius-lg);
+  padding: clamp(0.75rem, 2vw, 1rem);
+}
+
+.converter-page .selector-row + .selector-row {
+  border-top: var(--ds-border-width) solid var(--ds-border);
+  padding-top: var(--ds-space-3);
+}
+
+.converter-page .format-buttons {
+  gap: var(--ds-space-2);
+}
+
+.converter-page .format-buttons button,
+.converter-page .item-actions button {
+  min-height: max(44px, var(--ds-control-md));
+  line-height: 1.25;
+  padding-block: var(--ds-space-2);
+}
+
+.converter-page .format-buttons button.active {
+  border-color: var(--video-highlight);
+  box-shadow: inset 0 -2px var(--video-highlight);
+}
+
+.converter-page .item-actions {
+  flex-wrap: wrap;
+}
+
+.converter-page :is(.btn-convert, .btn-download) {
+  background: var(--video-gold);
+  color: #fff;
+}
+
+.converter-page :is(.btn-convert, .btn-download):hover:not(:disabled) {
+  background: var(--video-gold-hover);
+}
+
+.converter-page :is(.format-buttons, .item-actions) button:focus-visible {
+  outline: 2px solid var(--video-highlight);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .converter-page .upload-icon.spinning {
+    animation: none;
+  }
+}

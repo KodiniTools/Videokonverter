@@ -117,20 +117,20 @@ describe('Etappe 2: Werkzeugkopf', () => {
   }
 });
 
-describe('Etappe 3: Werkzeugoberfläche', () => {
-  const css = readFrontend('css/kodini-app-stage3.css');
+describe('Etappe 3: Bedienelemente', () => {
+  const css = readFrontend('css/kodini-controls-stage3.css');
   const converterJs = readFrontend('js/converter.js');
 
-  it('nur das Werkzeug lädt kodini-app-stage3.css', () => {
-    assert.match(converter, /href="\/videokonverter\/css\/kodini-app-stage3\.css"/);
-    assert.doesNotMatch(landing, /kodini-app-stage3\.css/);
+  it('nur das Werkzeug lädt die Stylesheets aus Etappe 3 und 4', () => {
+    for (const file of ['kodini-controls-stage3.css', 'kodini-workspace-stage4.css']) {
+      assert.match(converter, new RegExp(`href="/videokonverter/css/${file.replace('.', '\\.')}"`));
+      assert.doesNotMatch(landing, new RegExp(file.replace('.', '\\.')));
+    }
   });
 
   it('Konvertieren und Herunterladen sind dunkelgold mit weisser Schrift', () => {
     const rule =
-      css.match(
-        /\.converter-page \.btn-convert,\s*\.converter-page \.btn-download \{([^}]*)\}/
-      )?.[1] ?? '';
+      css.match(/\.converter-page :is\(\.btn-convert, \.btn-download\) \{([^}]*)\}/)?.[1] ?? '';
     assert.match(rule, /background: var\(--video-gold\);/);
     assert.match(rule, /color: #fff;/);
   });
@@ -154,19 +154,38 @@ describe('Etappe 3: Werkzeugoberfläche', () => {
   it('aktive Auswahl ist golden unterstrichen, Drag-over golden hervorgehoben', () => {
     assert.match(
       css,
-      /\.format-buttons button\.active \{[^}]*box-shadow: inset 0 -3px var\(--video-highlight\);/
+      /\.format-buttons button\.active \{[^}]*box-shadow: inset 0 -2px var\(--video-highlight\);/
     );
     assert.match(css, /\.drop-zone\.drag-over \{[^}]*border-color: var\(--video-highlight\);/);
   });
 
-  it('Aktionsbuttons: mindestens 44 px hoch und sichtbarer Tastaturfokus', () => {
-    assert.match(css, /\.item-actions button \{[^}]*min-height: 44px;/);
-    assert.match(css, /:focus-visible \{[^}]*outline: 2px solid var\(--video-highlight\);/);
+  it('Buttons: mindestens 44 px hoch und sichtbarer Tastaturfokus', () => {
+    assert.match(css, /min-height: max\(44px, var\(--ds-control-md\)\);/);
+    assert.match(css, /button:focus-visible \{[^}]*outline: 2px solid var\(--video-highlight\);/);
   });
 
   it('Auswahlbuttons melden ihren Zustand (aria-pressed) und behalten den Fokus', () => {
     assert.equal((converterJs.match(/setAttribute\('aria-pressed'/g) ?? []).length, 2);
     assert.match(converterJs, /refocusSelection\(jobId, 'data-format', format\)/);
     assert.match(converterJs, /refocusSelection\(jobId, 'data-quality', quality\)/);
+  });
+});
+
+describe('Etappe 4: Arbeitsbereich', () => {
+  const css = readFrontend('css/kodini-workspace-stage4.css');
+
+  it('Upload und Warteschlange teilen sich eine Breite', () => {
+    assert.match(
+      css,
+      /:is\(\.uploader-container, \.conversion-queue\) \{[^}]*max-width: var\(--video-workspace-width\);/
+    );
+  });
+
+  it('lange Dateinamen brechen um', () => {
+    assert.match(css, /\.file-name \{[^}]*white-space: normal;[^}]*overflow-wrap: anywhere;/);
+  });
+
+  it('Fortschrittsbalken ist 8 px hoch', () => {
+    assert.match(css, /\.progress-bar \{[^}]*height: 8px;/);
   });
 });

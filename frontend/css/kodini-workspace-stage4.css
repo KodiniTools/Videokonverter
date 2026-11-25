@@ -1,0 +1,87 @@
+/* Arbeitsfläche und Auftragszustände der bestehenden Konverter-Oberfläche. */
+.converter-page .main {
+  --video-workspace-width: 800px;
+}
+
+.converter-page .video-app-title,
+.converter-page .connection-status {
+  max-width: var(--video-workspace-width);
+  margin-inline: auto;
+}
+
+.converter-page .connection-status {
+  justify-content: flex-start;
+}
+
+.converter-page .status-dot {
+  flex: 0 0 8px;
+}
+
+.converter-page :is(.uploader-container, .conversion-queue) {
+  max-width: var(--video-workspace-width);
+}
+
+.converter-page .conversion-queue h2 {
+  padding-bottom: var(--ds-space-3);
+  border-bottom: var(--ds-border-width) solid var(--ds-border-strong);
+  font-size: clamp(1.25rem, 3vw, 1.625rem);
+  line-height: var(--ds-leading-tight);
+}
+
+.converter-page .queue-list {
+  display: grid;
+  gap: var(--ds-space-3);
+}
+
+.converter-page .conversion-item {
+  margin-bottom: 0;
+  padding: clamp(0.875rem, 2.5vw, 1.375rem);
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-surface-1);
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--ds-surface-1) 88%, var(--video-glow)),
+    var(--ds-surface-1) 55%
+  );
+}
+
+.converter-page .item-header {
+  align-items: flex-start;
+}
+
+.converter-page .file-name {
+  font-size: var(--ds-text-lg);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.converter-page .file-meta,
+.converter-page .error-text {
+  overflow-wrap: anywhere;
+}
+
+.converter-page .item-header .status {
+  max-width: 100%;
+  padding: var(--ds-space-1) var(--ds-space-2);
+  border: var(--ds-border-width) solid var(--ds-border);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface-1);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.converter-page .progress-bar {
+  height: 8px;
+}
+
+.converter-page .progress-fill {
+  border-radius: inherit;
+  background: var(--ds-info);
+  background: linear-gradient(90deg, var(--ds-info), var(--video-highlight));
+}
+
+@media (min-width: 769px) {
+  .converter-page .item-header .status {
+    max-width: 45%;
+  }
+}
