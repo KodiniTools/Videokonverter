@@ -1,0 +1,174 @@
+/* Grundlayout für den Video-Konverter. Die globale SSI-Navigation bleibt separat. */
+:is(.landing, .converter-page) {
+  --ds-weight-medium: 400;
+  --ds-weight-semibold: 400;
+  --ds-weight-bold: 400;
+  --video-glow: color-mix(in srgb, #2089be 29%, var(--ds-surface-0));
+  --video-gold: #79521e;
+  --video-gold-hover: #684419;
+  --video-highlight: #e6bf75;
+  --video-content-width: 1160px;
+  --video-gutter: clamp(1rem, 3vw, 2rem);
+  min-height: auto;
+  font-weight: 400;
+  font-synthesis: none;
+  background: radial-gradient(ellipse at 85% 3%, var(--video-glow), transparent 65%) top center /
+    100% 36rem no-repeat var(--ds-surface-0);
+}
+
+[data-theme='light'] :is(.landing, .converter-page) {
+  --video-glow: color-mix(in srgb, #78b9de 32%, var(--ds-surface-0));
+  --video-highlight: #80551f;
+}
+
+:is(.landing, .converter-page) :is(h1, h2, h3, h4, strong, b) {
+  font-weight: 400;
+}
+
+.video-section-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-2);
+  width: min(100%, var(--video-content-width));
+  margin-inline: auto;
+  padding: var(--ds-space-3) var(--video-gutter);
+}
+
+.video-section-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ds-control-md);
+  padding-inline: var(--ds-space-3);
+  border: var(--ds-border-width) solid var(--ds-border-strong);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface-1);
+  color: var(--ds-text);
+  text-decoration: none;
+}
+
+.video-section-nav a:is(:hover, [aria-current='page']) {
+  border-color: var(--video-highlight);
+  color: var(--video-highlight);
+}
+
+:is(.landing, .converter-page) :is(a, summary):focus-visible {
+  outline: 2px solid var(--video-highlight);
+  outline-offset: 3px;
+}
+
+.landing .hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(1.5rem, 5vw, 4rem);
+  width: min(100%, var(--video-content-width));
+  margin-inline: auto;
+  padding: clamp(2.5rem, 7vw, 6rem) var(--video-gutter) clamp(2.5rem, 6vw, 4rem);
+  background: transparent;
+  border: 0;
+}
+
+.landing .hero-content {
+  text-align: start;
+}
+
+.landing .hero-title {
+  font-size: clamp(2.4rem, 5.5vw, 4.4rem);
+  line-height: 1.06;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+}
+
+.video-hero-lead {
+  margin-bottom: var(--ds-space-2);
+  color: var(--video-highlight);
+  font-size: 1.2rem;
+}
+
+.landing .hero-subtitle {
+  margin-bottom: var(--ds-space-4);
+}
+
+.landing .hero-formats {
+  justify-content: start;
+  margin-bottom: var(--ds-space-5);
+}
+
+.landing .hero-cta {
+  background: var(--video-gold);
+  color: #fff;
+}
+
+.landing .hero-cta:hover {
+  background: var(--video-gold-hover);
+}
+
+.video-hero-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border: var(--ds-border-width) solid var(--ds-border-strong);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow-overlay);
+}
+
+.landing .features {
+  padding: clamp(2rem, 5vw, 3.5rem) var(--video-gutter);
+  background: var(--ds-surface-1);
+  border-block: var(--ds-border-width) solid var(--ds-border);
+}
+
+.landing .features-grid {
+  max-width: calc(var(--video-content-width) - 2 * var(--video-gutter));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.landing .feature-card {
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--video-glow) 38%, var(--ds-surface-1)),
+    var(--ds-surface-1)
+  );
+}
+
+.video-section-title {
+  margin-bottom: var(--ds-space-6);
+  text-align: center;
+}
+
+.video-faq {
+  width: min(100%, var(--video-content-width));
+  margin-inline: auto;
+  padding: clamp(2rem, 5vw, 3.5rem) var(--video-gutter);
+}
+
+.video-faq details {
+  margin-top: var(--ds-space-4);
+}
+.video-faq summary {
+  color: var(--video-highlight);
+  cursor: pointer;
+}
+.video-faq p {
+  margin-top: var(--ds-space-2);
+  color: var(--ds-text-2);
+}
+
+.converter-page .main {
+  width: min(100%, var(--video-content-width));
+  margin-inline: auto;
+  padding: clamp(1.5rem, 5vw, 3rem) var(--video-gutter);
+}
+
+.video-app-title {
+  margin-bottom: var(--ds-space-4);
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 1.1;
+}
+
+@media (max-width: 760px) {
+  .landing .hero,
+  .landing .features-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
