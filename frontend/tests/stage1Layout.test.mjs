@@ -286,3 +286,49 @@ describe('Texte zur Verarbeitung', () => {
     assert.match(i18nJs, /heroSubtitle: '[^']*on our server/);
   });
 });
+
+describe('Zweifarbiger Titel', () => {
+  const layout = readFrontend('css/kodini-layout-stage1.css');
+  const tokens = readFrontend('css/tokens-v2.css');
+  const luminance = (hex) => {
+    const [r, g, b] = hex.match(/\w\w/g).map((c) => {
+      const v = parseInt(c, 16) / 255;
+      return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const ratio = (a, b) => {
+    const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+    return (hi + 0.05) / (lo + 0.05);
+  };
+  const block = (selector) =>
+    layout.match(new RegExp(`(?:^|\\n)${selector} \\{([^}]*)\\}`))?.[1] ?? '';
+  const value = (css, name) => css.match(new RegExp(`${name}: (#[0-9a-f]{6});`, 'i'))?.[1];
+  const surfaces = [...tokens.matchAll(/--ds-surface-0: (#[0-9a-f]{6});/gi)].map((m) => m[1]);
+
+  it('Landingpage-Titel besteht aus Hauptteil und Akzent mit Übersetzungen', () => {
+    assert.match(
+      landing,
+      /<h1 class="hero-title"><span class="hero-title-main" data-i18n="heroTitleMain">Video konvertieren<\/span> <span class="hero-title-accent" data-i18n="heroTitleAccent">online<\/span><\/h1>/
+    );
+  });
+
+  it('Farben laut Vorgabe: Hell #775115/#0058a0, Dunkel #e6bc76/#48a0d8', () => {
+    const dark = block('\\.landing');
+    const light = block("\\[data-theme='light'\\] \\.landing");
+    assert.equal(value(dark, '--video-title-gold'), '#e6bc76');
+    assert.equal(value(dark, '--video-title-blue'), '#48a0d8');
+    assert.equal(value(light, '--video-title-gold'), '#775115');
+    assert.equal(value(light, '--video-title-blue'), '#0058a0');
+  });
+
+  it('Titelfarben erreichen WCAG AA für grosse Schrift (3:1) auf der Seitenfläche', () => {
+    assert.ok(surfaces.length >= 2);
+    const [darkSurface] = surfaces;
+    const lightSurface = surfaces.at(-1);
+    for (const hex of ['#e6bc76', '#48a0d8'])
+      assert.ok(ratio(hex, darkSurface) >= 3, `${hex} auf ${darkSurface}`);
+    for (const hex of ['#775115', '#0058a0'])
+      assert.ok(ratio(hex, lightSurface) >= 3, `${hex} auf ${lightSurface}`);
+  });
+});

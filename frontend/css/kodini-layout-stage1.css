@@ -60,6 +60,25 @@
   overflow-wrap: anywhere;
 }
 
+/* Titel zweifarbig: Gold für den Hauptteil, Logo-Blau für „online“ */
+.landing {
+  --video-title-gold: #e6bc76;
+  --video-title-blue: #48a0d8;
+}
+
+[data-theme='light'] .landing {
+  --video-title-gold: #775115;
+  --video-title-blue: #0058a0;
+}
+
+.landing .hero-title-main {
+  color: var(--video-title-gold);
+}
+
+.landing .hero-title-accent {
+  color: var(--video-title-blue);
+}
+
 .video-hero-lead {
   margin-bottom: var(--ds-space-2);
   color: var(--video-highlight);
