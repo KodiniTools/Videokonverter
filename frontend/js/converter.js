@@ -206,7 +206,6 @@
           var response = JSON.parse(xhr.responseText);
           job.status = 'uploaded';
           job.progress = 100;
-          job.uploadedFilePath = response.filePath;
         } catch (err) {
           job.status = 'error';
           setJobError(job, 'uploadFailedError');
@@ -743,7 +742,9 @@
   window.addEventListener('i18n-applied', renderAllJobs);
 
   // ===== Initialize =====
-  connectWS();
+  // Erst die Auftragsliste laden: Die Antwort setzt das Besitzer-Cookie, das die
+  // WebSocket-Verbindung danach mitschickt. Nur so erhält dieser Browser die
+  // Fortschrittsmeldungen seiner eigenen Aufträge.
 
   async function restoreJobsFromServer() {
     try {
@@ -780,5 +781,5 @@
     }
   }
 
-  restoreJobsFromServer();
+  restoreJobsFromServer().then(connectWS, connectWS);
 })();

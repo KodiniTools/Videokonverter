@@ -33,7 +33,7 @@ describe('removeStaleEntries', () => {
     const input = await touch('upload-1.mp4');
     const output = await touch('output-2.webm');
     addUploadedFile('u1', { inputPath: input, originalName: 'a.mp4', fileSize: 1 });
-    addJob('j2', { outputPath: output, format: 'webm', originalName: 'b.mp4' });
+    addJob('j2', { outputPath: output, format: 'webm', originalName: 'b.mp4', owner: 'o' });
 
     const removed = await removeStaleEntries(() => false);
 
@@ -58,11 +58,13 @@ describe('removeStaleEntries', () => {
       outputPath: path.join(tmpDir, 'not-written-yet.mp4'),
       format: 'mp4',
       originalName: 'r.mov',
+      owner: 'o',
     });
     addJob('downloaded', {
       outputPath: path.join(tmpDir, 'already-downloaded.mp4'),
       format: 'mp4',
       originalName: 'd.mov',
+      owner: 'o',
     });
 
     const removed = await removeStaleEntries((jobId) => jobId === 'running');
@@ -76,6 +78,7 @@ describe('removeStaleEntries', () => {
     addUploadedFile('u1', {
       inputPath: path.join(tmpDir, 'missing.mp4'),
       originalName: 'a.mp4',
+      owner: 'o',
       fileSize: 1,
     });
 
