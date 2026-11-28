@@ -14,16 +14,25 @@ import {
   removeStaleEntries,
 } from '../services/job-store.service.js';
 import type { VideoFormat, VideoQuality } from '../types/conversion.js';
+import { JOB_ID_PATTERN, ownerMiddleware, ownerOf } from '../services/owner.service.js';
+
+const FORMATS: readonly VideoFormat[] = ['mp4', 'webm', 'avi', 'mov', 'mkv', 'ts'];
+const QUALITIES: readonly VideoQuality[] = ['low', 'medium', 'high', 'ultra'];
 
 const router = Router();
+
+// Jeder Auftrag gehört dem Browser, der ihn hochgeladen hat. Fremde Aufträge
+// sind für andere Browser unsichtbar (404), auch bei bekannter Auftrags-ID.
+router.use(ownerMiddleware);
 const ffmpegService = new FFmpegService();
 const diskSpaceService = new DiskSpaceService();
 
 // Export für Graceful Shutdown
 export { ffmpegService };
 
-// GET /api/jobs — return all known jobs for frontend restoration after reload
+// GET /api/jobs — return this browser's jobs for frontend restoration after reload
 router.get('/jobs', async (req, res) => {
+  const owner = ownerOf(res);
   // Drop entries whose files were already removed (cleanup, download, …) so
   // they do not reappear in the frontend after a reload.
   const processManager = ffmpegService.getProcessManager();
@@ -40,6 +49,7 @@ router.get('/jobs', async (req, res) => {
   }> = [];
 
   for (const [jobId, file] of uploadedFiles.entries()) {
+    if (file.owner !== owner) continue;
     result.push({
       jobId,
       status: 'uploaded',
@@ -49,6 +59,7 @@ router.get('/jobs', async (req, res) => {
   }
 
   for (const [jobId, job] of jobs.entries()) {
+    if (job.owner !== owner) continue;
     if (processManager.isActive(jobId)) {
       result.push({
         jobId,
@@ -95,8 +106,13 @@ router.post('/upload', uploadRateLimit, upload.single('video'), async (req, res)
       originalName?: string;
     };
 
-    if (!jobId) {
-      return res.status(400).json({ error: 'Missing jobId' });
+    if (!jobId || !JOB_ID_PATTERN.test(jobId)) {
+      await fs.unlink(req.file.path).catch(() => {});
+      return res.status(400).json({ error: 'Missing or invalid jobId' });
+    }
+    if (uploadedFiles.has(jobId) || jobs.has(jobId)) {
+      await fs.unlink(req.file.path).catch(() => {});
+      return res.status(409).json({ error: 'jobId already in use' });
     }
 
     // Originalname aus Request oder Fallback auf Multer-Originalname
@@ -121,7 +137,8 @@ router.post('/upload', uploadRateLimit, upload.single('video'), async (req, res)
     addUploadedFile(jobId, {
       inputPath: req.file.path,
       originalName: fileName,
-      fileSize: req.file.size
+      fileSize: req.file.size,
+      owner: ownerOf(res),
     });
 
     console.log(`[Upload] ✅ File uploaded: ${fileName} (${jobId})`);
@@ -129,7 +146,6 @@ router.post('/upload', uploadRateLimit, upload.single('video'), async (req, res)
     res.json({
       jobId,
       status: 'uploaded',
-      filePath: req.file.path,
       fileName,
       fileSize: req.file.size
     });
@@ -148,13 +164,13 @@ router.post('/convert/:jobId', convertRateLimit, async (req, res) => {
       quality: VideoQuality;
     };
 
-    if (!targetFormat || !quality) {
-      return res.status(400).json({ error: 'Missing targetFormat or quality' });
+    if (!FORMATS.includes(targetFormat) || !QUALITIES.includes(quality)) {
+      return res.status(400).json({ error: 'Missing or invalid targetFormat or quality' });
     }
 
-    // Hochgeladene Datei finden
+    // Hochgeladene Datei finden (nur eigene)
     const uploadedFile = uploadedFiles.get(jobId);
-    if (!uploadedFile) {
+    if (!uploadedFile || uploadedFile.owner !== ownerOf(res)) {
       return res.status(404).json({ error: 'Uploaded file not found' });
     }
 
@@ -162,7 +178,12 @@ router.post('/convert/:jobId', convertRateLimit, async (req, res) => {
     const outputPath = path.join(config.upload.outputDir, outputFilename);
 
     // Job-Info speichern
-    addJob(jobId, { outputPath, format: targetFormat, originalName: uploadedFile.originalName });
+    addJob(jobId, {
+      outputPath,
+      format: targetFormat,
+      originalName: uploadedFile.originalName,
+      owner: uploadedFile.owner,
+    });
 
     // Aus Upload-Map entfernen
     uploadedFiles.delete(jobId);
@@ -191,7 +212,7 @@ router.get('/download/:jobId', downloadRateLimit, (req, res) => {
   const { jobId } = req.params;
   const job = jobs.get(jobId);
 
-  if (!job) {
+  if (!job || job.owner !== ownerOf(res)) {
     return res.status(404).json({ error: 'Job not found' });
   }
 
@@ -228,11 +249,12 @@ router.get('/download/:jobId', downloadRateLimit, (req, res) => {
 router.delete('/jobs/:jobId', async (req, res) => {
   try {
     const { jobId } = req.params;
+    const owner = ownerOf(res);
     let removed = false;
 
     // Uploaded file that has not been converted yet
     const uploadedFile = uploadedFiles.get(jobId);
-    if (uploadedFile) {
+    if (uploadedFile && uploadedFile.owner === owner) {
       try {
         await fs.unlink(uploadedFile.inputPath);
       } catch (e) { /* file already gone – ignore */ }
@@ -242,7 +264,7 @@ router.delete('/jobs/:jobId', async (req, res) => {
 
     // Job that is converting or already converted
     const job = jobs.get(jobId);
-    if (job) {
+    if (job && job.owner === owner) {
       // Stop the ffmpeg process if it is still running
       try {
         await ffmpegService.getProcessManager().kill(jobId, 'user_cancel');
@@ -270,6 +292,10 @@ router.delete('/convert/:jobId', async (req, res) => {
     const { jobId } = req.params;
 
     console.log(`[Convert] Cancel request for job: ${jobId}`);
+
+    if (jobs.get(jobId)?.owner !== ownerOf(res)) {
+      return res.status(404).json({ error: 'Job not found or already completed' });
+    }
 
     // Prozess über Process Manager killen
     const processManager = ffmpegService.getProcessManager();

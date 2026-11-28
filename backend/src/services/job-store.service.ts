@@ -17,12 +17,16 @@ export interface UploadedFile {
   inputPath: string;
   originalName: string;
   fileSize: number;
+  /** Besitzer-Token des hochladenden Browsers (siehe owner.service.ts). */
+  owner: string;
 }
 
 export interface ConversionJob {
   outputPath: string;
   format: string;
   originalName: string;
+  /** Besitzer-Token des hochladenden Browsers (siehe owner.service.ts). */
+  owner: string;
 }
 
 export const uploadedFiles = new Map<string, UploadedFile>();

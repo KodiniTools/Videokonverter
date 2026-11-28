@@ -1,15 +1,18 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import type { Server } from 'http';
+import { jobs } from './services/job-store.service.js';
+import { readOwner } from './services/owner.service.js';
 
 let wss: WebSocketServer;
-const clients = new Set<WebSocket>();
+/** Verbundene Browser mit ihrem Besitzer-Token (aus dem Cookie beim Verbindungsaufbau). */
+const clients = new Map<WebSocket, string | null>();
 
 export function initWebSocket(server: Server) {
   wss = new WebSocketServer({ server });
 
-  wss.on('connection', (ws) => {
+  wss.on('connection', (ws, req) => {
     console.log('[WS] Client connected');
-    clients.add(ws);
+    clients.set(ws, readOwner(req.headers.cookie));
 
     ws.on('close', () => {
       console.log('[WS] Client disconnected');
@@ -25,11 +28,17 @@ export function initWebSocket(server: Server) {
   return wss;
 }
 
-export function broadcastProgress(data: any) {
+/**
+ * Sendet eine Fortschrittsmeldung nur an die Browser, denen der Auftrag gehört.
+ * Meldungen ohne bekannten Auftrag werden verworfen.
+ */
+export function broadcastProgress(data: { jobId: string } & Record<string, unknown>) {
+  const owner = jobs.get(data.jobId)?.owner;
+  if (!owner) return;
   const message = JSON.stringify(data);
-  
-  clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
+
+  clients.forEach((clientOwner, client) => {
+    if (clientOwner === owner && client.readyState === WebSocket.OPEN) {
       client.send(message);
     }
   });
